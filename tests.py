@@ -57,6 +57,7 @@ def setup_function(func):
 # INTEGRATION
 # =============================================================================
 
+@pytest.mark.integtest
 def test_load_cases_remote():
     local = arcovid19.load_cases(url=LOCAL_CASES)
     local = local[local.dates]
