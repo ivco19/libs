@@ -73,6 +73,9 @@ CACHE_EXPIRE = 60 * 60  # ONE HOUR
 CASES_URL = "https://github.com/ivco19/libs/raw/master/databases/cases.xlsx"
 
 
+DATE_FORMAT = '%m/%d/%y'
+
+
 PROVINCIAS = {
     'CABA': 'CABA',
     'Bs As': 'BA',
@@ -263,7 +266,7 @@ class CasesPlot:
         kwargs.setdefault("active", False)
         kwargs.setdefault("recovered", False)
         kwargs.setdefault("deceased", False)
-        
+
         exclude = [] if exclude is None else exclude
 
         if ax is None:
@@ -287,18 +290,18 @@ class CasesPlot:
             self.grate_full_period(provincia=code, ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
-        ispace = int(len(labels)/10)
+        ispace = int(len(labels) / 10)
         ticks = np.arange(len(labels))[::ispace]
         slabels = [l.strftime("%d.%b") for l in labels][::ispace]
         lmin = labels[0].strftime("%d.%b")
         lmax = labels[-1].strftime("%d.%b")
         t = []
-        d0 = dt.datetime.strptime("3/11/20", '%m/%d/%y') #pandemia: 11 marzo
+        d0 = dt.datetime.strptime("3/11/20", DATE_FORMAT)  # pandemia: 11/mar
         for dd in self.cstats.dates:
             elapsed_days = (dd - d0).days
             t.append(elapsed_days)
         t = np.array(t)
-        
+
         ax.set_xticks(ticks=ticks)
         ax.set_xticklabels(labels=slabels, rotation=0)
         ax.set_title(
@@ -306,16 +309,16 @@ class CasesPlot:
             f"{lmin} - {lmax}")
         ax.set_xlabel("Date")
         ax.set_ylabel("Number of cases")
-        
+
         # add a second axis
         ax2 = ax.twiny()
         ax2.set_xlim(ax.get_xlim())
         ax2.set_xlabel("days from first case")
-        q1 = dt.datetime.strptime("3/20/20", '%m/%d/%y') #cuarentena: 20 marzo
+        q1 = dt.datetime.strptime("3/20/20", DATE_FORMAT)  # cuarentena: 20/mar
         d_ini = (q1 - d0).days
         d_fin = ax2.get_xlim()[1]
         ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
-        
+
         return ax
 
     def grate_full_period(
