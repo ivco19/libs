@@ -186,21 +186,22 @@ class CasesPlot:
 
     def _plot_df(
         self, *, odf, prov_name, prov_code,
-        confirmed, active, recovered, deceased
+        confirmed, active, recovered, deceased, norm=1.
     ):
+
         columns = {}
         if confirmed:
             cseries = odf.loc[(prov_code, 'C')][self.cstats.dates].values
-            columns[f"{prov_name} Confirmed"] = cseries
+            columns[f"{prov_name} Confirmed"] = cseries / norm
         if active:
             cseries = odf.loc[(prov_code, 'A')][self.cstats.dates].values
-            columns[f"{prov_name} Active"] = cseries
+            columns[f"{prov_name} Active"] = cseries / norm
         if recovered:
             cseries = odf.loc[(prov_code, 'R')][self.cstats.dates].values
-            columns[f"{prov_name} Recovered"] = cseries
+            columns[f"{prov_name} Recovered"] = cseries / norm
         if deceased:
             cseries = odf.loc[(prov_code, 'D')][self.cstats.dates].values
-            columns[f"{prov_name} Deceased"] = cseries
+            columns[f"{prov_name} Deceased"] = cseries / norm
         pdf = pd.DataFrame(columns)
         return pdf
 
@@ -252,7 +253,7 @@ class CasesPlot:
 
     def grate_full_period_all_commented(
         self, ax=None, argentina=True,
-        exclude=None, **kwargs
+        exclude=None, log=False, **kwargs
     ):
         """
         method: grate_full_period_all_commented()
@@ -303,40 +304,129 @@ class CasesPlot:
         t = np.array(t)
 
         ax.set_xticks(ticks=ticks)
-        ax.set_xticklabels(labels=slabels, rotation=0)
+        ax.set_xticklabels(labels=slabels, rotation=0, fontsize=16)
         ax.set_title(
-            "COVID-19 Grow in Argentina by Province\n"
-            f"{lmin} - {lmax}")
-        ax.set_xlabel("Date")
-        ax.set_ylabel("Number of cases")
-
+            "COVID-19 Grow in Argentina by Province, between "\
+            f"{lmin} and {lmax}", fontsize=16)
+        ax.set_xlabel("Date", fontsize=16)
+        ax.set_ylabel("Cumulative number of cases", fontsize=16)
+        ax.tick_params(axis='x', direction='in', length=8)
+        if log: ax.set(yscale='log')
+        
         # add a second axis
         ax2 = ax.twiny()
-        ax2.set_xlim(ax.get_xlim())
-        ax2.set_xlabel("days from first case")
-        q1 = dt.datetime.strptime("3/20/20", DATE_FORMAT)  # cuarentena: 20/mar
+        ax2.set_xlim(min(t), max(t))
+        ax2.set_xlabel("days from pandemic declaration", fontsize=16,
+                color='blue')
+        q1 = dt.datetime.strptime("3/20/20", DATE_FORMAT) #cuarentena: 20 marzo
         d_ini = (q1 - d0).days
         d_fin = ax2.get_xlim()[1]
         ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
 
+        ax2.tick_params(axis='x', direction='in', length=10, pad=-28,
+                color='blue', labelcolor='blue', labelsize=16)
+        
         return ax
 
+    def full_period_normalized(
+        self, ax=None, argentina=True,
+        exclude=None, log=False, **kwargs
+    ):
+        """
+        method: full_period_normalized()
+
+        This function plots the time series, similar to grate_full_period_all,
+        but including a second axis and comments about the start of quarantine
+
+        """
+
+        kwargs.setdefault("confirmed", True)
+        kwargs.setdefault("active", False)
+        kwargs.setdefault("recovered", False)
+        kwargs.setdefault("deceased", False)
+        
+        exclude = [] if exclude is None else exclude
+
+        if ax is None:
+            ax = plt.gca()
+            fig = plt.gcf()
+
+            height = len(PROVINCIAS) - len(exclude) - int(argentina)
+            height = 4 if height <= 0 else (height)
+
+            fig.set_size_inches(12, height)
+
+        if argentina:
+            self.grate_full_period(provincia=None, ax=ax, **kwargs)
+
+        exclude = [] if exclude is None else exclude
+        exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
+
+        for code in sorted(CODE_TO_POVINCIA):
+            if code in exclude:
+                continue
+            self.grate_full_period(provincia=code, ax=ax, **kwargs)
+
+        labels = [d.date() for d in self.cstats.dates]
+        ispace = int(len(labels)/10)
+        ticks = np.arange(len(labels))[::ispace]
+        slabels = [l.strftime("%d.%b") for l in labels][::ispace]
+        lmin = labels[0].strftime("%d.%b")
+        lmax = labels[-1].strftime("%d.%b")
+        t = []
+        d0 = dt.datetime.strptime("3/11/20", '%m/%d/%y') #pandemia: 11 marzo
+        for dd in self.cstats.dates:
+            elapsed_days = (dd - d0).days
+            t.append(elapsed_days)
+        t = np.array(t)
+        
+        ax.set_xticks(ticks=ticks)
+        ax.set_xticklabels(labels=slabels, rotation=0, fontsize=16)
+        ax.set_title(
+            "COVID-19 Grow in Argentina by Province, between "\
+            f"{lmin} and {lmax}", fontsize=16)
+        ax.set_xlabel("Date", fontsize=16)
+        ax.set_ylabel("Cumulative number of cases", fontsize=16)
+        ax.tick_params(axis='x', direction='in', length=8)
+        if log: ax.set(yscale='log')
+        
+        # add a second axis
+        ax2 = ax.twiny()
+        ax2.set_xlim(min(t), max(t))
+        ax2.set_xlabel("days from pandemic declaration", fontsize=16,
+                color='blue')
+        q1 = dt.datetime.strptime("3/20/20", '%m/%d/%y') #cuarentena: 20 marzo
+        d_ini = (q1 - d0).days
+        d_fin = ax2.get_xlim()[1]
+        ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
+
+        ax2.tick_params(axis='x', direction='in', length=10, pad=-28,
+                color='blue', labelcolor='blue', labelsize=16)
+        
+        return ax
+ 
     def grate_full_period(
         self, provincia=None, confirmed=True,
         active=True, recovered=True, deceased=True,
-        ax=None, log=False, **kwargs
+        ax=None, log=False, norm=False, **kwargs
     ):
         if provincia is None:
             prov_name, prov_c = "Argentina", "ARG"
         else:
             prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
 
+        # READ PROVINCES DATA
+        areapop = pd.read_csv('arg_provs.dat')
+        p = areapop['pop'][areapop['key']==prov_c].values[0]
+        norm_factor = 1.
+        if norm: norm_factor = p / 1.e6
+
         ax = plt.gca() if ax is None else ax
 
         pdf = self._plot_df(
             odf=self.cstats.df, prov_name=prov_name, prov_code=prov_c,
             confirmed=confirmed, active=active,
-            recovered=recovered, deceased=deceased)
+            recovered=recovered, deceased=deceased, norm=norm_factor)
         pdf.plot.line(ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
@@ -350,8 +440,8 @@ class CasesPlot:
             f"{labels[0]} - {labels[-1]}")
         ax.set_xlabel("Date")
         ax.set_ylabel("N")
-
         ax.legend()
+        if log: ax.set(yscale='log')
 
         return ax
 
@@ -607,7 +697,6 @@ class CasesFrame:
         growth_rate[np.where(np.isinf(growth_rate))] = np.nan
 
         return pd.Series(index=self.dates[1:], data=growth_rate)
-
 
 def load_cases(url=CASES_URL, cached=True):
     """Utility function to parse all the actual cases of the COVID-19 in
