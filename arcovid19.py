@@ -416,7 +416,7 @@ class CasesPlot:
             prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
 
         # READ PROVINCES DATA
-        areapop = pd.read_csv('arg_provs.dat')
+        areapop = pd.read_csv('databases/arg_provs.dat')
         p = areapop['pop'][areapop['key']==prov_c].values[0]
         norm_factor = 1.
         if norm: norm_factor = p / 1.e6
@@ -778,6 +778,7 @@ def load_cases(url=CASES_URL, cached=True):
     df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
 
     return CasesFrame(df=df_infar)
+   
 
 
 # =============================================================================
