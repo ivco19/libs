@@ -1,0 +1,51 @@
+\documentclass[target, onecolumn]{arcovid}
+
+\usepackage[pdftex]{hyperref}
+\usepackage{subfigure}
+\usepackage{natbib}
+\usepackage{helvet,soul}
+\usepackage[font=small]{caption}
+\usepackage{booktabs}
+
+\begin{document}
+
+\title{Reporte diario de la situación COVID-19 en Argentina}
+\subtitle{}
+\titlerunning{arcovid19}
+
+\author{equipo arcovid19}
+\authorrunning{arcovid19 team}
+\contact{mrrobot@arcovid19.gov}
+
+\abstract{Este es un informe generado automáticamente usando las
+herramientas de Brooks}
+
+\maketitle
+
+A partir del dia de la fecha se detectó circulación comunitaria del
+virus covid-19, en las principales concetraciones urbanas de
+Argentina.
+
+
+
+\section{Situación internacional}
+
+
+\BLOCK{ for i in range(Nplots) } 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{\VAR{plts[i]}}
+  \caption{\VAR{captions[i]}}
+\end{figure}
+\BLOCK{ endfor }
+
+
+\section{Situación en Argentina}
+
+
+
+
+
+
+
+\end{document}

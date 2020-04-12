@@ -131,3 +131,11 @@ dmypy.json
 # matlpotlib test
 result_images/
 databases/see.py
+
+# latex auxiliary files
+report/*.aux
+report/*.log
+report/*.out
+report/*png
+report/report.tex
+report/report.pdf
