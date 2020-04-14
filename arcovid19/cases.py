@@ -48,24 +48,12 @@ import unicodedata
 
 import attr
 
-import diskcache as dcache
+from . import cache
 
 
 # =============================================================================
 # CONSTANTS
 # =============================================================================
-
-ARCOVID19_DATA = os.path.expanduser(os.path.join('~', 'arcovid19_data'))
-
-#: Default cache location, (default=~/arcovid_19_data/_cache_)
-DEFAULT_CACHE_DIR = os.path.join(ARCOVID19_DATA, "_cache_")
-
-#: Default cache instance
-CACHE = dcache.Cache(directory=DEFAULT_CACHE_DIR, disk_min_file_size=0)
-
-#: Time to expire of every load_cases call in seconds
-CACHE_EXPIRE = 60 * 60  # ONE HOUR
-
 
 CASES_URL = "https://github.com/ivco19/libs/raw/master/databases/cases.xlsx"
 
@@ -120,35 +108,12 @@ STATUS = {
     'Muertos': 'D'}
 
 
-logger = logging.getLogger("arcovid19")
+logger = logging.getLogger("arcovid19.cases")
 
 
 # =============================================================================
 # FUNCTIONS_
 # =============================================================================
-
-def from_cache(fname, on_not_found, cached=True, **kwargs):
-    """Simple cache orchestration.
-
-    """
-    # start the cache orchestration
-    key = dcache.core.args_to_key(
-        base=("arcodiv19",), args=(fname,), kwargs=kwargs, typed=False)
-    with CACHE as cache:
-        cache.expire()
-
-        value = (
-            cache.get(key, default=dcache.core.ENOVAL, retry=True)
-            if cached else dcache.core.ENOVAL)
-
-        if value is dcache.core.ENOVAL:
-            value = on_not_found()
-            cache.set(
-                key, value, expire=CACHE_EXPIRE,
-                tag=f"{fname}", retry=True)
-
-    return value
-
 
 def safe_log(array):
     """Convert all -inf to 0"""
@@ -710,11 +675,9 @@ def load_cases(url=CASES_URL, cached=True):
         - level 1: cod_status - Four states of disease patients (R, C, A, D)
 
     """
-    df_infar = from_cache(
-        fname="load_cases",
-        on_not_found=lambda: pd.read_excel(url, sheet_name=0, nrows=96),
-        cached=cached,
-        url=url)
+    df_infar = cache.from_cache(
+        "cases.load_cases", force=not cached,
+        function=pd.read_excel, io=url, sheet_name=0, nrows=96)
 
     # load table and replace Nan by zeros
     df_infar = df_infar.fillna(0)
