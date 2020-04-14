@@ -13,15 +13,14 @@
 # DOCS
 # =============================================================================
 
-"""Utilities to Utility function to parse all the actual cases of the COVID-19 in Argentina.
+"""Utilities to Utility function to parse all the actual cases of the
+COVID-19 in Argentina.
 
 """
 
 __all__ = [
-    "DEFAULT_CACHE_DIR",
-    "CACHE",
-    "CACHE_EXPIRE",
     "CODE_TO_POVINCIA",
+    "D0", "Q1",
     "CasesPlot",
     "CasesFrame",
     "load_cases"]
@@ -31,8 +30,6 @@ __all__ = [
 # IMPORTS
 # =============================================================================
 
-import os
-import sys
 import datetime as dt
 import itertools as it
 
@@ -106,6 +103,14 @@ STATUS = {
     'Confirmado': 'C',
     'Activos': 'A',
     'Muertos': 'D'}
+
+
+#: Pandemia Start 2020-03-11
+D0 = dt.datetime(year=2020, month=3, day=11)
+
+
+#:  Argentine quarantine starts 2020-03-20
+Q1 = dt.datetime(year=2020, month=3, day=20)
 
 
 logger = logging.getLogger("arcovid19.cases")
@@ -253,17 +258,13 @@ class CasesPlot:
             self.grate_full_period(provincia=code, ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
+
         ispace = int(len(labels) / 10)
         ticks = np.arange(len(labels))[::ispace]
         slabels = [l.strftime("%d.%b") for l in labels][::ispace]
-        lmin = labels[0].strftime("%d.%b")
-        lmax = labels[-1].strftime("%d.%b")
-        t = []
-        d0 = dt.datetime.strptime("3/11/20", DATE_FORMAT)  # pandemia: 11/mar
-        for dd in self.cstats.dates:
-            elapsed_days = (dd - d0).days
-            t.append(elapsed_days)
-        t = np.array(t)
+        lmin, lmax = labels[0].strftime("%d.%b"), labels[-1].strftime("%d.%b")
+
+        t = np.array([(dd - D0).days for dd in self.cstats.dates])
 
         ax.set_xticks(ticks=ticks)
         ax.set_xticklabels(labels=slabels, rotation=0, fontsize=16)
@@ -273,21 +274,25 @@ class CasesPlot:
         ax.set_xlabel("Date", fontsize=16)
         ax.set_ylabel("Cumulative number of cases", fontsize=16)
         ax.tick_params(axis='x', direction='in', length=8)
+
         if log:
             ax.set(yscale='log')
 
         # add a second axis
         ax2 = ax.twiny()
         ax2.set_xlim(min(t), max(t))
-        ax2.set_xlabel("days from pandemic declaration", fontsize=16,
-                       color='blue')
-        q1 = dt.datetime.strptime("3/20/20", DATE_FORMAT)  # cuarentena: 20/03
-        d_ini = (q1 - d0).days
+        ax2.set_xlabel(
+            "days from pandemic declaration", fontsize=16, color='blue')
+
+        d_ini = (Q1 - D0).days
         d_fin = ax2.get_xlim()[1]
+
         ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
 
-        ax2.tick_params(axis='x', direction='in', length=10, pad=-28,
-                        color='blue', labelcolor='blue', labelsize=16)
+        ax2.tick_params(
+            axis='x', direction='in', length=10, pad=-28,
+            color='blue', labelcolor='blue', labelsize=16)
+
         return ax
 
     def full_period_normalized(
@@ -323,17 +328,13 @@ class CasesPlot:
             self.grate_full_period(provincia=code, ax=ax, **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
-        ispace = int(len(labels)/10)
+        ispace = int(len(labels) / 10)
         ticks = np.arange(len(labels))[::ispace]
         slabels = [l.strftime("%d.%b") for l in labels][::ispace]
-        lmin = labels[0].strftime("%d.%b")
-        lmax = labels[-1].strftime("%d.%b")
-        t = []
-        d0 = dt.datetime.strptime("3/11/20", '%m/%d/%y')  # pandemia: 11/03
-        for dd in self.cstats.dates:
-            elapsed_days = (dd - d0).days
-            t.append(elapsed_days)
-        t = np.array(t)
+        lmin, lmax = labels[0].strftime("%d.%b"), labels[-1].strftime("%d.%b")
+
+        t = np.array([(dd - D0).days for dd in self.cstats.dates])
+
         ax.set_xticks(ticks=ticks)
         ax.set_xticklabels(labels=slabels, rotation=0, fontsize=16)
         ax.set_title(
@@ -348,14 +349,17 @@ class CasesPlot:
         # add a second axis
         ax2 = ax.twiny()
         ax2.set_xlim(min(t), max(t))
-        ax2.set_xlabel("days from pandemic declaration", fontsize=16,
-                       color='blue')
-        q1 = dt.datetime.strptime("3/20/20", '%m/%d/%y')  # cuarentena: 20/03
-        d_ini = (q1 - d0).days
+        ax2.set_xlabel(
+            "days from pandemic declaration", fontsize=16, color='blue')
+
+        d_ini = (Q1 - D0).days
         d_fin = ax2.get_xlim()[1]
+
         ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
-        ax2.tick_params(axis='x', direction='in', length=10, pad=-28,
-                        color='blue', labelcolor='blue', labelsize=16)
+        ax2.tick_params(
+            axis='x', direction='in', length=10, pad=-28,
+            color='blue', labelcolor='blue', labelsize=16)
+
         return ax
 
     def grate_full_period(

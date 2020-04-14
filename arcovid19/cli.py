@@ -25,10 +25,7 @@ __all__ = ["main"]
 # IMPORTS
 # =============================================================================
 
-import os
 import sys
-
-import diskcache as dcache
 
 from .cases import load_cases, CASES_URL
 
