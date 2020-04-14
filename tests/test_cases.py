@@ -285,6 +285,19 @@ def test_plot_barplot(fig_test, fig_ref):
 
 
 @check_figures_equal()
+def test_plot_grate_full_period_all_commented(fig_test, fig_ref):
+    df = arcovid19.load_cases(url=LOCAL_CASES)
+
+    # fig test
+    test_ax = fig_test.subplots()
+    test_ax = df.plot("grate_full_period_all_commented", ax=test_ax)
+
+    # expected
+    exp_ax = fig_ref.subplots()
+    df.plot.grate_full_period_all_commented(ax=exp_ax)
+
+
+@check_figures_equal()
 def test_plot_boxplot(fig_test, fig_ref):
     df = arcovid19.load_cases(url=LOCAL_CASES)
 
