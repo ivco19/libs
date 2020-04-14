@@ -52,7 +52,7 @@ DESCRIPTION = (
     "COVID-19 data from the IATE task force.")
 
 
-with open(PATH / "arcovid19.py") as fp:
+with open(PATH / "arcovid19" / "__init__.py") as fp:
     VERSION = [
         l for l in fp.readlines() if l.startswith("__version__")
     ][0].split("=", 1)[-1].strip().replace('"', "")
@@ -82,9 +82,10 @@ def do_setup():
             "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: Implementation :: CPython",
             "Topic :: Scientific/Engineering"),
-        py_modules=["arcovid19", "ez_setup"],
+        py_modules=["ez_setup"],
+        packages=["arcovid19"],
         entry_points={
-            'console_scripts': ['arcovid19=arcovid19:main']},
+            'console_scripts': ['arcovid19=arcovid19.cases:main']},
         install_requires=REQUIREMENTS)
 
 

@@ -42,7 +42,7 @@ import arcovid19
 
 PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 
-LOCAL_CASES = PATH / "databases" / "cases.xlsx"
+LOCAL_CASES = PATH.parent / "databases" / "cases.xlsx"
 
 
 # =============================================================================
@@ -50,24 +50,24 @@ LOCAL_CASES = PATH / "databases" / "cases.xlsx"
 # =============================================================================
 
 def setup_function(func):
-    arcovid19.CACHE.clear()
+    arcovid19.cases.CACHE.clear()
 
 
 # =============================================================================
 # INTEGRATION
 # =============================================================================
 
-@pytest.mark.integtest
-def test_load_cases_remote():
-    local = arcovid19.load_cases(url=LOCAL_CASES)
-    local = local[local.dates]
-    local[local.isnull()] = 143
+# @pytest.mark.integtest
+# def test_load_cases_remote():
+#     local = arcovid19.load_cases(url=LOCAL_CASES)
+#     local = local[local.dates]
+#     local[local.isnull()] = 143
 
-    remote = arcovid19.load_cases()
-    remote = remote[remote.dates]
-    remote[remote.isnull()] = 143
+#     remote = arcovid19.load_cases()
+#     remote = remote[remote.dates]
+#     remote[remote.isnull()] = 143
 
-    assert np.all(local == remote)
+#     assert np.all(local == remote)
 
 
 # =============================================================================
@@ -76,7 +76,7 @@ def test_load_cases_remote():
 
 def test_load_cases_local():
     df = arcovid19.load_cases(url=LOCAL_CASES)
-    assert isinstance(df, arcovid19.CasesFrame)
+    assert isinstance(df, arcovid19.cases.CasesFrame)
 
 
 def test_delegation():
@@ -108,7 +108,7 @@ def test_full_grate():
 
 def test_full_grate_provincias():
     df = arcovid19.load_cases(url=LOCAL_CASES)
-    for name, code in arcovid19.PROVINCIAS.items():
+    for name, code in arcovid19.cases.PROVINCIAS.items():
         wname = df.grate_full_period(provincia=name)
         wcode = df.grate_full_period(provincia=code)
         assert isinstance(wname, pd.Series)
@@ -117,7 +117,7 @@ def test_full_grate_provincias():
 
 def test_grate_provincias():
     df = arcovid19.load_cases(url=LOCAL_CASES)
-    for name, code in arcovid19.PROVINCIAS.items():
+    for name, code in arcovid19.cases.PROVINCIAS.items():
         wname = df.last_growth_rate(provincia=name)
         wcode = df.last_growth_rate(provincia=code)
 
@@ -143,8 +143,8 @@ def test_get_item():
 def test_restore_time_serie():
     df = arcovid19.load_cases(url=LOCAL_CASES)
     tsdf = df.restore_time_serie()
-    for prov in arcovid19.PROVINCIAS.values():
-        for code in arcovid19.STATUS.values():
+    for prov in arcovid19.cases.PROVINCIAS.values():
+        for code in arcovid19.cases.STATUS.values():
             orig_row = df.loc[(prov, code)][df.dates].values
             ts = tsdf.loc[(prov, code)][df.dates].values
             assert np.all(ts.cumsum() == orig_row)
@@ -215,7 +215,7 @@ def test_plot_grate_full_period_all_equivalent_calls(fig_test, fig_ref):
 
     cases.plot.grate_full_period(
         deceased=False, active=False, recovered=False, ax=exp_ax)
-    for prov in sorted(arcovid19.CODE_TO_POVINCIA):
+    for prov in sorted(arcovid19.cases.CODE_TO_POVINCIA):
         cases.plot.grate_full_period(
             prov, deceased=False, active=False, recovered=False, ax=exp_ax)
 
@@ -264,7 +264,7 @@ def test_plot_time_serie_all_equivalent_calls(fig_test, fig_ref):
 
     cases.plot.time_serie(
         deceased=False, active=False, recovered=False, ax=exp_ax)
-    for prov in sorted(arcovid19.CODE_TO_POVINCIA):
+    for prov in sorted(arcovid19.cases.CODE_TO_POVINCIA):
         cases.plot.time_serie(
             prov, deceased=False, active=False, recovered=False, ax=exp_ax)
 

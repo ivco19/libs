@@ -13,8 +13,7 @@
 # DOCS
 # =============================================================================
 
-"""Utilities to access different Argentina-Related databases of
-COVID-19 data from the IATE task force.
+"""Utilities to Utility function to parse all the actual cases of the COVID-19 in Argentina.
 
 """
 
@@ -26,8 +25,6 @@ __all__ = [
     "CasesPlot",
     "CasesFrame",
     "load_cases"]
-
-__version__ = "0.4.1"
 
 
 # =============================================================================
