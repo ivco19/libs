@@ -88,7 +88,7 @@ def do_setup():
         py_modules=["ez_setup"],
         packages=["arcovid19"],
         entry_points={
-            'console_scripts': ['arcovid19=arcovid19.cases:main']},
+            'console_scripts': ['arcovid19=arcovid19.cli:main']},
         install_requires=REQUIREMENTS)
 
 

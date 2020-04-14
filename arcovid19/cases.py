@@ -650,7 +650,7 @@ class CasesFrame:
         return pd.Series(index=self.dates[1:], data=growth_rate)
 
 
-def load_cases(url=CASES_URL, cached=True):
+def load_cases(url=CASES_URL, force=False):
     """Utility function to parse all the actual cases of the COVID-19 in
     Argentina.
 
@@ -661,8 +661,8 @@ def load_cases(url=CASES_URL, cached=True):
     url: str
         The url for the excel table to parse. Default is ivco19 team table.
 
-    cached : bool
-        If you want to use the local cache or retrieve a new value.
+    force : bool (default=False)
+        If you want to ignore the local cache and retrieve a new value.
 
     Returns
     -------
@@ -676,7 +676,7 @@ def load_cases(url=CASES_URL, cached=True):
 
     """
     df_infar = cache.from_cache(
-        "cases.load_cases", force=not cached,
+        tag="cases.load_cases", force=force,
         function=pd.read_excel, io=url, sheet_name=0, nrows=96)
 
     # load table and replace Nan by zeros
@@ -728,36 +728,3 @@ def load_cases(url=CASES_URL, cached=True):
     df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
 
     return CasesFrame(df=df_infar)
-
-
-# =============================================================================
-# MAIN_
-# =============================================================================
-
-def main():
-    from clize import run
-
-    def _load_cases(*, url=CASES_URL, nocached=False, out=None):
-        """Retrieve and store the database as an as CSV file.
-
-        url: str
-            The url for the excel table to parse. Default is ivco19 team table.
-
-        out: PATH (default=stdout)
-            The output path to the CSV file. If it's not provided the
-            data is printed in the stdout.
-
-        nocached:
-            If you want to ignore the local cache or retrieve a new value.
-
-        """
-        cases = load_cases(url=url, cached=not nocached)
-        if out is not None:
-            cases.to_csv(out)
-        else:
-            cases.to_csv(sys.stdout)
-    run(_load_cases)
-
-
-if __name__ == '__main__':
-    main()
