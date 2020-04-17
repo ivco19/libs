@@ -35,6 +35,7 @@ __version__ = "0.4.1"
 # =============================================================================
 
 import os
+import io
 import sys
 import datetime as dt
 import itertools as it
@@ -52,6 +53,8 @@ import unicodedata
 import attr
 
 import diskcache as dcache
+
+import requests
 
 
 # =============================================================================
@@ -407,7 +410,10 @@ class CasesPlot:
             prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
 
         # READ PROVINCES DATA
-        areapop = pd.read_csv('databases/arg_provs.dat')
+        CASES_URL_P = "https://raw.githubusercontent.com/ivco19/libs/master/databases/arg_provs.dat"
+        s = requests.get(CASES_URL_P).content
+        areapop = pd.read_csv(io.StringIO(s.decode('utf-8')))
+
         p = areapop['pop'][areapop['key'] == prov_c].values[0]
         norm_factor = 1.
         if norm:
