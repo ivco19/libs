@@ -43,9 +43,7 @@ import matplotlib.pyplot as plt
 
 import unicodedata
 
-import attr
-
-from . import cache
+from . import cache, core
 
 
 # =============================================================================
@@ -53,6 +51,9 @@ from . import cache
 # =============================================================================
 
 CASES_URL = "https://github.com/ivco19/libs/raw/master/databases/cases.xlsx"
+
+
+AREAS_POP_URL = 'https://github.com/ivco19/libs/raw/master/databases/arg_provs.dat'  # noqa
 
 
 DATE_FORMAT = '%m/%d/%y'
@@ -132,24 +133,7 @@ def safe_log(array):
 # CASES
 # =============================================================================
 
-@attr.s(frozen=True, repr=False)
-class CasesPlot:
-
-    cstats = attr.ib()
-
-    def __repr__(self):
-        return f"CasesPlot({hex(id(self.cstats))})"
-
-    def __call__(self, plot_name=None, ax=None, **kwargs):
-        """x.__call__() == x()"""
-        plot_name = plot_name or ""
-
-        if plot_name.startswith("_"):
-            raise ValueError(f"Invalid plot_name '{plot_name}'")
-
-        plot = getattr(self, plot_name, self.grate_full_period_all)
-        ax = plot(ax=ax, **kwargs)
-        return ax
+class CasesPlot(core.Plotter):
 
     def _plot_df(
         self, *, odf, prov_name, prov_code,
@@ -535,40 +519,14 @@ class CasesPlot:
         return ax
 
 
-@attr.s(frozen=True, repr=False)
-class CasesFrame:
+class CasesFrame(core.Frame):
     """Wrapper around the `load_cases()` table.
 
     This class adds functionalities around the dataframe.
 
     """
 
-    df = attr.ib()
-    plot = attr.ib(init=False)
-
-    @plot.default
-    def _plot_default(self):
-        return CasesPlot(cstats=self)
-
-    def __dir__(self):
-        """x.__dir__() <==> dir(x)"""
-        return super().__dir__() + dir(self.df)
-
-    def __repr__(self):
-        """x.__repr__() <==> repr(x)"""
-        return repr(self.df)
-
-    def __getattr__(self, a):
-        """x.__getattr__(y) <==> x.y
-
-        Redirect all te missing calls to the internal datadrame.
-
-        """
-        return getattr(self.df, a)
-
-    def __getitem__(self, k):
-        """x.__getitem__(y) <==> x[y]"""
-        return self.df.__getitem__(k)
+    plot_cls = CasesPlot
 
     @property
     def dates(self):
