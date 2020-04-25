@@ -40,7 +40,7 @@ logger = logging.getLogger("arcovid19.core")
 # CASES
 # =============================================================================
 
-@attr.s(frozen=True, repr=False)
+@attr.s(repr=False)
 class Plotter:
 
     cstats = attr.ib()
@@ -60,7 +60,7 @@ class Plotter:
         return ax
 
 
-@attr.s(frozen=True, repr=False)
+@attr.s(repr=False)
 class Frame:
 
     df = attr.ib()

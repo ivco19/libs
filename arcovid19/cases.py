@@ -53,7 +53,7 @@ from . import cache, core
 CASES_URL = "https://github.com/ivco19/libs/raw/master/databases/cases.xlsx"
 
 
-AREAS_POP_URL = 'https://github.com/ivco19/libs/raw/master/databases/arg_provs.dat'  # noqa
+AREAS_POP_URL = 'https://github.com/ivco19/libs/raw/master/databases/extra/arg_provs.dat'  # noqa
 
 
 DATE_FORMAT = '%m/%d/%y'
@@ -357,12 +357,10 @@ class CasesPlot(core.Plotter):
             prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
 
         # READ PROVINCES DATA
-        areapop = pd.read_csv('databases/arg_provs.dat')
-        p = areapop['pop'][areapop['key'] == prov_c].values[0]
-        norm_factor = 1.
-        if norm:
-            norm_factor = p / 1.e6
+        areapop = self.ctats.areapop
+        population = areapop['pop'][areapop['key'] == prov_c].values[0]
 
+        norm_factor = (population / 1.e6) if norm else 1.
         ax = plt.gca() if ax is None else ax
 
         pdf = self._plot_df(
@@ -689,4 +687,4 @@ def load_cases(url=CASES_URL, force=False):
     growth_rate_C = (n_c[1:] / n_c[:-1]) - 1
     df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
 
-    return CasesFrame(df=df_infar)
+    return CasesFrame(df=df_infar, extra=)

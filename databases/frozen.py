@@ -20,7 +20,9 @@ def frozen(path=PATH):
     if not isinstance(path, pathlib.Path):
         path = pathlib.Path(path)
 
-    updates = {}
+    with open(updates_path) as fp:
+        updates = json.load(fp)
+
     updates_path = path / UPDATES_FNAME
 
     for fn, url in URLS.items():
