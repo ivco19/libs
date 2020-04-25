@@ -44,6 +44,8 @@ PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 
 LOCAL_CASES = PATH.parent / "databases" / "cases.xlsx"
 
+LOCAL_AREA_POP = PATH.parent / "databases" / "extra" / "arg_provs.dat"
+
 
 # =============================================================================
 # SETUP
@@ -75,39 +77,52 @@ def setup_function(func):
 # =============================================================================
 
 def test_load_cases_local():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
     assert isinstance(df, arcovid19.cases.CasesFrame)
 
 
 def test_delegation():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     assert repr(df) == repr(df.df)
     assert df.transpose == df.df.transpose
 
 
+def test_areapop():
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
+    assert np.all(df.areapop == df.extra["areapop"])
+
+
 def test_dates():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
     assert isinstance(df.dates, list)
 
 
 def test_totcases():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
     assert isinstance(df.tot_cases, float)
 
 
 def test_last_grate():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
     assert isinstance(df.last_growth_rate(), float)
 
 
 def test_full_grate():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
     assert isinstance(df.grate_full_period(), pd.Series)
 
 
 def test_full_grate_provincias():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
     for name, code in arcovid19.cases.PROVINCIAS.items():
         wname = df.grate_full_period(provincia=name)
         wcode = df.grate_full_period(provincia=code)
@@ -116,7 +131,8 @@ def test_full_grate_provincias():
 
 
 def test_grate_provincias():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
     for name, code in arcovid19.cases.PROVINCIAS.items():
         wname = df.last_growth_rate(provincia=name)
         wcode = df.last_growth_rate(provincia=code)
@@ -128,20 +144,23 @@ def test_grate_provincias():
 
 
 def test_grate_provincia_invalida():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
     with pytest.raises(ValueError):
         df.last_growth_rate(provincia="colorado")
 
 
 def test_get_item():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
     value = df[df.provincia_status == f"CBA_C"]
     expected = df.df[df.provincia_status == f"CBA_C"]
     assert np.all(value == expected)
 
 
 def test_restore_time_serie():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
     tsdf = df.restore_time_serie()
     for prov in arcovid19.cases.PROVINCIAS.values():
         for code in arcovid19.cases.STATUS.values():
@@ -155,14 +174,16 @@ def test_restore_time_serie():
 # =============================================================================
 
 def test_invalid_plot_name():
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
     with pytest.raises(ValueError):
         df.plot("_plot_df")
 
 
 @check_figures_equal()
 def test_plot_call(fig_test, fig_ref):
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     # fig test
     test_ax = fig_test.subplots()
@@ -170,12 +191,13 @@ def test_plot_call(fig_test, fig_ref):
 
     # expected
     exp_ax = fig_ref.subplots()
-    df.plot.grate_full_period_all(ax=exp_ax)
+    df.plot.curva_epi_pais(ax=exp_ax)
 
 
 @check_figures_equal()
 def test_plot_grate_full_period_all(fig_test, fig_ref):
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     # fig test
     test_ax = fig_test.subplots()
@@ -188,7 +210,8 @@ def test_plot_grate_full_period_all(fig_test, fig_ref):
 
 @check_figures_equal()
 def test_plot_grate_full_period(fig_test, fig_ref):
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     # fig test
     test_ax = fig_test.subplots()
@@ -201,7 +224,8 @@ def test_plot_grate_full_period(fig_test, fig_ref):
 
 @check_figures_equal()
 def test_plot_grate_full_period_all_equivalent_calls(fig_test, fig_ref):
-    cases = arcovid19.load_cases(url=LOCAL_CASES)
+    cases = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     # fig test
     fig_test.set_size_inches(12, 12)
@@ -224,7 +248,8 @@ def test_plot_grate_full_period_all_equivalent_calls(fig_test, fig_ref):
 
 @check_figures_equal()
 def test_plot_time_serie_all(fig_test, fig_ref):
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     # fig test
     test_ax = fig_test.subplots()
@@ -237,7 +262,8 @@ def test_plot_time_serie_all(fig_test, fig_ref):
 
 @check_figures_equal()
 def test_plot_time_serie(fig_test, fig_ref):
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     # fig test
     test_ax = fig_test.subplots()
@@ -250,7 +276,8 @@ def test_plot_time_serie(fig_test, fig_ref):
 
 @check_figures_equal()
 def test_plot_time_serie_all_equivalent_calls(fig_test, fig_ref):
-    cases = arcovid19.load_cases(url=LOCAL_CASES)
+    cases = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     # fig test
     fig_test.set_size_inches(12, 12)
@@ -273,7 +300,8 @@ def test_plot_time_serie_all_equivalent_calls(fig_test, fig_ref):
 
 @check_figures_equal()
 def test_plot_barplot(fig_test, fig_ref):
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     # fig test
     test_ax = fig_test.subplots()
@@ -286,7 +314,8 @@ def test_plot_barplot(fig_test, fig_ref):
 
 @check_figures_equal()
 def test_plot_grate_full_period_all_commented(fig_test, fig_ref):
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     # fig test
     test_ax = fig_test.subplots()
@@ -299,7 +328,8 @@ def test_plot_grate_full_period_all_commented(fig_test, fig_ref):
 
 @check_figures_equal()
 def test_plot_boxplot(fig_test, fig_ref):
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     # fig test
     test_ax = fig_test.subplots()
@@ -319,7 +349,8 @@ def test_plot_boxplot(fig_test, fig_ref):
         "time_serie", "time_serie_all",
         "grate_full_period", "grate_full_period_all"])
 def test_plot_all_dates_ticks(plot_name):
-    df = arcovid19.load_cases(url=LOCAL_CASES)
+    df = arcovid19.load_cases(
+        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     expected = [str(d.date()) for d in df.dates]
 

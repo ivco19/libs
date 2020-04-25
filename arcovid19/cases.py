@@ -136,6 +136,8 @@ def safe_log(array):
 
 class CasesPlot(core.Plotter):
 
+    default_plot_name_method = "curva_epi_pais"
+
     def _plot_df(
         self, *, odf, prov_name, prov_code,
         confirmed, active, recovered, deceased, norm=1.
@@ -649,7 +651,7 @@ class CasesFrame(core.Frame):
         return pd.Series(index=self.dates[1:], data=growth_rate)
 
 
-def load_cases(url=CASES_URL, force=False):
+def load_cases(cases_url=CASES_URL, areas_pop_url=AREAS_POP_URL, force=False):
     """Utility function to parse all the actual cases of the COVID-19 in
     Argentina.
 
@@ -657,8 +659,12 @@ def load_cases(url=CASES_URL, force=False):
     Parameters
     ----------
 
-    url: str
+    cases_url: str
         The url for the excel table to parse. Default is ivco19 team table.
+
+    areas_pop_url: str
+        The url for the csv population table to parse.
+        Default is ivco19 team table.
 
     force : bool (default=False)
         If you want to ignore the local cache and retrieve a new value.
@@ -676,11 +682,11 @@ def load_cases(url=CASES_URL, force=False):
     """
     df_infar = cache.from_cache(
         tag="cases.load_cases", force=force,
-        function=pd.read_excel, io=url, sheet_name=0, nrows=96)
+        function=pd.read_excel, io=cases_url, sheet_name=0, nrows=96)
 
     areapop = cache.from_cache(
         tag="cases.load_caces[areapop]", force=force,
-        function=pd.read_csv, filepath_or_buffer=AREAS_POP_URL)
+        function=pd.read_csv, filepath_or_buffer=areas_pop_url)
 
     # load table and replace Nan by zeros
     df_infar = df_infar.fillna(0)

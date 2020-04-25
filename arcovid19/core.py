@@ -50,12 +50,12 @@ class Plotter:
 
     def __call__(self, plot_name=None, ax=None, **kwargs):
         """x.__call__() == x()"""
-        plot_name = plot_name or ""
+        plot_name = plot_name or self.default_plot_name_method
 
         if plot_name.startswith("_"):
             raise ValueError(f"Invalid plot_name '{plot_name}'")
 
-        plot = getattr(self, plot_name, self.grate_full_period_all)
+        plot = getattr(self, plot_name)
         ax = plot(ax=ax, **kwargs)
         return ax
 
