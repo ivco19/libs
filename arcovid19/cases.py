@@ -97,6 +97,7 @@ PROVINCIAS_ALIAS = {
 CODE_TO_POVINCIA = {
     v: k for k, v in it.chain(PROVINCIAS.items(), PROVINCIAS_ALIAS.items())}
 
+
 STATUS = {
     'Recuperado': 'R',
     'Recuperados': 'R',
@@ -156,132 +157,20 @@ class CasesPlot(core.Plotter):
         pdf = pd.DataFrame(columns)
         return pdf
 
-    def grate_full_period_all(
-        self, ax=None, argentina=True,
-        exclude=None, **kwargs
-    ):
-
-        kwargs.setdefault("confirmed", True)
-        kwargs.setdefault("active", False)
-        kwargs.setdefault("recovered", False)
-        kwargs.setdefault("deceased", False)
-
-        exclude = [] if exclude is None else exclude
-
-        if ax is None:
-            ax = plt.gca()
-            fig = plt.gcf()
-
-            height = len(PROVINCIAS) - len(exclude) - int(argentina)
-            height = 4 if height <= 0 else (height)
-
-            fig.set_size_inches(12, height)
-
-        if argentina:
-            self.grate_full_period(provincia=None, ax=ax, **kwargs)
-
-        exclude = [] if exclude is None else exclude
-        exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
-
-        for code in sorted(CODE_TO_POVINCIA):
-            if code in exclude:
-                continue
-            self.grate_full_period(provincia=code, ax=ax, **kwargs)
-
-        labels = [d.date() for d in self.cstats.dates]
-        ticks = np.arange(len(labels))
-
-        ax.set_xticks(ticks=ticks)
-        ax.set_xticklabels(labels=labels, rotation=45)
-
-        ax.set_title(
-            "COVID-19 Grow in Argentina by Province\n"
-            f"{labels[0]} - {labels[-1]}")
-        ax.set_xlabel("Date")
-        ax.set_ylabel("N")
-
+    # functions for backwards compatibility
+    def full_period_period_all(self, *args, **kwargs):
+        ax = self.curva_epi_pais(*args, **kwargs)
         return ax
 
-    def grate_full_period_all_commented(
-        self, ax=None, argentina=True,
-        exclude=None, log=False, **kwargs
-    ):
-        """
-        method: grate_full_period_all_commented()
-
-        This function plots the time series, similar to grate_full_period_all,
-        but including a second axis and comments about the start of quarantine
-
-        """
-
-        kwargs.setdefault("confirmed", True)
-        kwargs.setdefault("active", False)
-        kwargs.setdefault("recovered", False)
-        kwargs.setdefault("deceased", False)
-
-        exclude = [] if exclude is None else exclude
-
-        if ax is None:
-            ax = plt.gca()
-            fig = plt.gcf()
-
-            height = len(PROVINCIAS) - len(exclude) - int(argentina)
-            height = 4 if height <= 0 else (height)
-
-            fig.set_size_inches(12, height)
-
-        if argentina:
-            self.grate_full_period(provincia=None, ax=ax, **kwargs)
-
-        exclude = [] if exclude is None else exclude
-        exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
-
-        for code in sorted(CODE_TO_POVINCIA):
-            if code in exclude:
-                continue
-            self.grate_full_period(provincia=code, ax=ax, **kwargs)
-
-        labels = [d.date() for d in self.cstats.dates]
-
-        ispace = int(len(labels) / 10)
-        ticks = np.arange(len(labels))[::ispace]
-        slabels = [l.strftime("%d.%b") for l in labels][::ispace]
-        lmin, lmax = labels[0].strftime("%d.%b"), labels[-1].strftime("%d.%b")
-
-        t = np.array([(dd - D0).days for dd in self.cstats.dates])
-
-        ax.set_xticks(ticks=ticks)
-        ax.set_xticklabels(labels=slabels, rotation=0, fontsize=16)
-        ax.set_title(
-            "COVID-19 Grow in Argentina by Province, between "
-            f"{lmin} and {lmax}", fontsize=16)
-        ax.set_xlabel("Date", fontsize=16)
-        ax.set_ylabel("Cumulative number of cases", fontsize=16)
-        ax.tick_params(axis='x', direction='in', length=8)
-
-        if log:
-            ax.set(yscale='log')
-
-        # add a second axis
-        ax2 = ax.twiny()
-        ax2.set_xlim(min(t), max(t))
-        ax2.set_xlabel(
-            "days from pandemic declaration", fontsize=16, color='blue')
-
-        d_ini = (Q1 - D0).days
-        d_fin = ax2.get_xlim()[1]
-
-        ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
-
-        ax2.tick_params(
-            axis='x', direction='in', length=10, pad=-28,
-            color='blue', labelcolor='blue', labelsize=16)
-
+    def grate_full_period(self, *args, **kwargs):
+        ax = self.curva_epi_provincia(*args, **kwargs)
         return ax
 
-    def full_period_normalized(
+    def curva_epi_pais(
         self, ax=None, argentina=True,
-        exclude=None, log=False, **kwargs
+        exclude=None, log=False, norm=False,
+        paint=None, count_days=None,
+        **kwargs
     ):
         """
         method: full_period_normalized()
@@ -289,6 +178,10 @@ class CasesPlot(core.Plotter):
         This function plots the time series, similar to grate_full_period_all,
         but including a second axis and comments about the start of quarantine
 
+        opciones para paint: pandemia, cuarentena
+
+        opciones para count_days: pandemia, cuarentena
+
         """
 
         kwargs.setdefault("confirmed", True)
@@ -302,84 +195,230 @@ class CasesPlot(core.Plotter):
             height = len(PROVINCIAS) - len(exclude) - int(argentina)
             height = 4 if height <= 0 else (height)
             fig.set_size_inches(12, height)
+
         if argentina:
             self.grate_full_period(provincia=None, ax=ax, **kwargs)
+
         exclude = [] if exclude is None else exclude
         exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
+
+        ccolors = ['steelblue'] * 10 + ['peru'] * 10 + ['darkmagenta'] * 10
+        cmarkers = ['o', '.', 'o', 'x', 'D']
+        cstyles = ['-', '-', '--', '--', ':']
+        cwidths = [2, 1, 1, 1, 2]
+        cwidths = [3] * 2 + [1] * 7
+
+        cfaces = ccolors[:]
+        for i, _ in enumerate(cfaces):
+            if i % 5 == 0 or i % 5 == 4:
+                cfaces[i] = 'white'
+
+        calpha = [1.0] * 5 + [1.0] * 5 + [1.0] * 5
+        cmrkevry = [(2, 3), (3, 2), (1, 5)]
+
+        icolors = it.cycle(ccolors)
+        imarkers = it.cycle(cmarkers)
+        istyles = it.cycle(cstyles)
+        iwidths = it.cycle(cwidths)
+        ifaces = it.cycle(cfaces)
+        ialpha = it.cycle(calpha)
+        imrkevry = it.cycle(cmrkevry)
+
+        aesthetics = {}
+
         for code in sorted(CODE_TO_POVINCIA):
             if code in exclude:
                 continue
-            self.grate_full_period(provincia=code, ax=ax, **kwargs)
+
+            aesthetics['color'] = next(icolors)
+            aesthetics['linewidth'] = next(iwidths)
+            aesthetics['linestyle'] = next(istyles)
+            aesthetics['marker'] = next(imarkers)
+            aesthetics['markerfacecolor'] = next(ifaces)
+            aesthetics['markeredgewidth'] = 1
+            aesthetics['markersize'] = 6
+            aesthetics['markevery'] = next(imrkevry)
+            aesthetics['alpha'] = next(ialpha)
+
+            mfc = aesthetics['markerfacecolor']
+            mew = aesthetics['markeredgewidth']
+
+            self.curva_epi_provincia(
+                provincia=code, ax=ax,
+                log=log, norm=norm,
+                color=aesthetics['color'],
+                linewidth=aesthetics['linewidth'],
+                linestyle=aesthetics['linestyle'],
+                marker=aesthetics['marker'],
+                markerfacecolor=mfc,
+                markeredgewidth=mew,
+                markersize=aesthetics['markersize'],
+                markevery=aesthetics['markevery'],
+                alpha=aesthetics['alpha'],
+                **kwargs)
 
         labels = [d.date() for d in self.cstats.dates]
         ispace = int(len(labels) / 10)
         ticks = np.arange(len(labels))[::ispace]
         slabels = [l.strftime("%d.%b") for l in labels][::ispace]
-        lmin, lmax = labels[0].strftime("%d.%b"), labels[-1].strftime("%d.%b")
-
-        t = np.array([(dd - D0).days for dd in self.cstats.dates])
+        lmin = labels[0].strftime("%d.%b")
+        lmax = labels[-1].strftime("%d.%b")
 
         ax.set_xticks(ticks=ticks)
         ax.set_xticklabels(labels=slabels, rotation=0, fontsize=16)
         ax.set_title(
-            "COVID-19 Grow in Argentina by Province, between "
+            "COVID-19 crecimiento en Argentina, por provincia, entre "
             f"{lmin} and {lmax}", fontsize=16)
         ax.set_xlabel("Date", fontsize=16)
-        ax.set_ylabel("Cumulative number of cases", fontsize=16)
+        ylabel = "Numero de casos acumulado"
+        if norm:
+            ax.set_ylabel(ylabel + " y normalizado", fontsize=16)
+        else:
+            ax.set_ylabel(ylabel, fontsize=16)
         ax.tick_params(axis='x', direction='in', length=8)
         if log:
             ax.set(yscale='log')
 
-        # add a second axis
-        ax2 = ax.twiny()
-        ax2.set_xlim(min(t), max(t))
-        ax2.set_xlabel(
-            "days from pandemic declaration", fontsize=16, color='blue')
+        # agregar eje x secundario
+        if count_days == 'pandemia':
 
-        d_ini = (Q1 - D0).days
-        d_fin = ax2.get_xlim()[1]
+            t = np.array([(dd - D0).days for dd in self.cstats.dates])
 
-        ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
-        ax2.tick_params(
-            axis='x', direction='in', length=10, pad=-28,
-            color='blue', labelcolor='blue', labelsize=16)
+            ax2 = ax.twiny()
+            ax2.set_xlim(min(t), max(t))
+            ax2.set_xlabel("dias desde la declaracion de la pandemia (11/3)",
+                           fontsize=16, color='blue')
+
+            ax2.tick_params(axis='x', direction='in', length=10, pad=-28,
+                            color='blue', labelcolor='blue', labelsize=16)
+
+        if count_days == 'cuarentena':
+
+            t = []
+            d0 = dt.datetime.strptime("3/20/20", '%m/%d/%y')  # cuarentena
+            for dd in self.cstats.dates:
+                elapsed_days = (dd - d0).days
+                t.append(elapsed_days)
+            t = np.array(t)
+
+            ax2 = ax.twiny()
+            ax2.set_xlim(min(t), max(t))
+            ax2.set_xlabel("dias desde la cuarentena (20/3)",
+                           fontsize=16, color='blue')
+
+            ax2.tick_params(axis='x', direction='in', length=10, pad=-28,
+                            color='blue', labelcolor='blue', labelsize=16)
+
+        # pintar periodo de tiempo
+        if (count_days == 'pandemia') or (count_days == 'cuarentena'):
+            if paint == 'pandemia':
+                q1 = dt.datetime.strptime("3/11/20", '%m/%d/%y')  # pandemia
+                d_ini = (q1 - d0).days
+                d_fin = ax2.get_xlim()[1]
+                ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
+
+            if paint == 'cuarentena':
+                q1 = dt.datetime.strptime("3/20/20", '%m/%d/%y')  # cuarentena
+                d_ini = (q1 - d0).days
+                d_fin = ax2.get_xlim()[1]
+                ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
+        else:
+            t = []
+            d0 = dt.datetime.strptime("1/01/20", '%m/%d/%y')  # any day
+            for dd in self.cstats.dates:
+                elapsed_days = (dd - d0).days
+                t.append(elapsed_days)
+            t = np.array(t)
+            ax2 = ax.twiny()
+            ax2.set_xlim(min(t), max(t))
+            ax2.axis('off')
+
+            if paint == 'pandemia':
+                q1 = dt.datetime.strptime("3/11/20", '%m/%d/%y')  # pandemia
+                d_ini = (q1 - d0).days
+                d_fin = ax2.get_xlim()[1]
+                ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
+
+            if paint == 'cuarentena':
+                q1 = dt.datetime.strptime("3/20/20", '%m/%d/%y')  # cuarentena
+                d_ini = (q1 - d0).days
+                d_fin = ax2.get_xlim()[1]
+                ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
 
         return ax
 
-    def grate_full_period(
-        self, provincia=None, confirmed=True,
+    def curva_epi_provincia(
+        self,
+        provincia=None, confirmed=True,
         active=True, recovered=True, deceased=True,
-        ax=None, log=False, norm=False, **kwargs
+        ax=None,
+        log=False, norm=False,
+        color=None, alpha=None,
+        linewidth=None, linestyle=None,
+        marker=None, markerfacecolor=None,
+        markeredgewidth=None,
+        markersize=None, markevery=None,
+        **kwargs
     ):
+
         if provincia is None:
             prov_name, prov_c = "Argentina", "ARG"
         else:
             prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
 
-        # READ PROVINCES DATA
-        areapop = self.ctats.areapop
-        population = areapop['pop'][areapop['key'] == prov_c].values[0]
+        # normalizacion a la poblacion de cada provincia
+        norm_factor = 1.
+        if norm:
+            areapop = self.ctats.areapop
+            population = areapop['pop'][areapop['key'] == prov_c].values[0]
+            norm_factor = population / 1.e6
 
-        norm_factor = (population / 1.e6) if norm else 1.
         ax = plt.gca() if ax is None else ax
 
+        # preparar dataframe
         pdf = self._plot_df(
             odf=self.cstats.df, prov_name=prov_name, prov_code=prov_c,
             confirmed=confirmed, active=active,
             recovered=recovered, deceased=deceased, norm=norm_factor)
-        pdf.plot.line(ax=ax, **kwargs)
+
+        # atributos graficos
+        aesthetics = {}
+        aesthetics['color'] = None if color is None else color
+        aesthetics['linewidth'] = None if linewidth is None else linewidth
+        aesthetics['linestyle'] = None if linestyle is None else linestyle
+        aesthetics['marker'] = None if marker is None else marker
+        mfc = markerfacecolor
+        aesthetics['markerfacecolor'] = None if mfc is None else mfc
+        mew = markeredgewidth
+        aesthetics['markeredgewidth'] = None if mew is None else mew
+        aesthetics['markersize'] = None if markersize is None else markersize
+        aesthetics['markevery'] = None if markevery is None else markevery
+        aesthetics['alpha'] = None if alpha is None else alpha
+
+        # hacer el grafico
+        pdf.plot.line(ax=ax, **kwargs, **aesthetics)
+
+        # elementos formales del grafico
         labels = [d.date() for d in self.cstats.dates]
-        ticks = np.arange(len(labels))
+        ispace = int(len(labels) / 10)
+        ticks = np.arange(len(labels))[::ispace]
+        slabels = [l.strftime("%d.%b") for l in labels][::ispace]
+        lmin = labels[0].strftime("%d.%b")
+        lmax = labels[-1].strftime("%d.%b")
+
         ax.set_xticks(ticks=ticks)
-        ax.set_xticklabels(labels=labels, rotation=45)
+        ax.set_xticklabels(labels=slabels, rotation=0, fontsize=16)
         ax.set_title(
-            f"COVID-19 Grow in {prov_name}\n"
-            f"{labels[0]} - {labels[-1]}")
-        ax.set_xlabel("Date")
+            "COVID-19 crecimiento en Argentina, por provincia, entre "
+            f"{lmin} and {lmax}", fontsize=16)
+        ax.set_xlabel("Fecha", fontsize=16)
         ax.set_ylabel("N")
-        ax.legend()
+        ax.legend(loc='upper left', frameon=False,
+                  borderaxespad=4,
+                  ncol=2, handlelength=3)
         if log:
             ax.set(yscale='log')
+
         return ax
 
     def time_serie_all(
