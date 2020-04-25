@@ -64,6 +64,7 @@ class Plotter:
 class Frame:
 
     df = attr.ib()
+    extra = attr.ib(factory=dict)
     plot = attr.ib(init=False)
 
     @plot.default
@@ -82,9 +83,12 @@ class Frame:
     def __getattr__(self, a):
         """x.__getattr__(y) <==> x.y
 
-        Redirect all te missing calls to the internal datadrame.
+        Redirect all te missing calls first to extra and then
+        to the internal datadrame.
 
         """
+        if a in self.extra:
+            return self.extra[a]
         return getattr(self.df, a)
 
     def __getitem__(self, k):

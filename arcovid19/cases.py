@@ -639,6 +639,10 @@ def load_cases(url=CASES_URL, force=False):
         tag="cases.load_cases", force=force,
         function=pd.read_excel, io=url, sheet_name=0, nrows=96)
 
+    areapop = cache.from_cache(
+        tag="cases.load_caces[areapop]", force=force,
+        function=pd.read_csv, filepath_or_buffer=AREAS_POP_URL)
+
     # load table and replace Nan by zeros
     df_infar = df_infar.fillna(0)
 
@@ -687,4 +691,4 @@ def load_cases(url=CASES_URL, force=False):
     growth_rate_C = (n_c[1:] / n_c[:-1]) - 1
     df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
 
-    return CasesFrame(df=df_infar, extra=)
+    return CasesFrame(df=df_infar, extra={"areapop": areapop})
