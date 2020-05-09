@@ -56,7 +56,7 @@ CASES_URL = "https://github.com/ivco19/libs/raw/master/databases/cases.xlsx"
 AREAS_POP_URL = 'https://github.com/ivco19/libs/raw/master/databases/extra/arg_provs.dat'  # noqa
 
 
-DATE_FORMAT = '%m/%d/%y'
+LABEL_DATE_FORMAT = "%d.%b"
 
 
 PROVINCIAS = {
@@ -160,13 +160,11 @@ class CasesPlot(core.Plotter):
         return pdf
 
     # functions for backwards compatibility
-    def full_period_period_all(self, *args, **kwargs):
-        ax = self.curva_epi_pais(*args, **kwargs)
-        return ax
+    def grate_full_period_all(self, *args, **kwargs):
+        return self.curva_epi_pais(*args, **kwargs)
 
     def grate_full_period(self, *args, **kwargs):
-        ax = self.curva_epi_provincia(*args, **kwargs)
-        return ax
+        return self.curva_epi_provincia(*args, **kwargs)
 
     def curva_epi_pais(
         self, ax=None, argentina=True,
@@ -401,12 +399,12 @@ class CasesPlot(core.Plotter):
         pdf.plot.line(ax=ax, **kwargs, **aesthetics)
 
         # elementos formales del grafico
-        labels = [d.date() for d in self.cstats.dates]
+        labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.cstats.dates]
         ispace = int(len(labels) / 10)
         ticks = np.arange(len(labels))[::ispace]
-        slabels = [l.strftime("%d.%b") for l in labels][::ispace]
-        lmin = labels[0].strftime("%d.%b")
-        lmax = labels[-1].strftime("%d.%b")
+        slabels = [l for l in labels][::ispace]
+        lmin = labels[0]
+        lmax = labels[-1]
 
         ax.set_xticks(ticks=ticks)
         ax.set_xticklabels(labels=slabels, rotation=0, fontsize=16)
@@ -454,7 +452,7 @@ class CasesPlot(core.Plotter):
                 continue
             self.time_serie(provincia=code, ax=ax, **kwargs)
 
-        labels = [d.date() for d in self.cstats.dates]
+        labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.cstats.dates]
         ticks = np.arange(len(labels))
 
         ax.set_xticks(ticks=ticks)
@@ -487,7 +485,7 @@ class CasesPlot(core.Plotter):
             recovered=recovered, deceased=deceased)
         pdf.plot.line(ax=ax, **kwargs)
 
-        labels = [d.date() for d in self.cstats.dates]
+        labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.cstats.dates]
         ticks = np.arange(len(labels))
 
         ax.set_xticks(ticks=ticks)

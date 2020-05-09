@@ -34,6 +34,7 @@ import pandas as pd
 from matplotlib.testing.decorators import check_figures_equal
 
 import arcovid19
+from arcovid19.cases import LABEL_DATE_FORMAT
 
 
 # =============================================================================
@@ -195,17 +196,17 @@ def test_plot_call(fig_test, fig_ref):
 
 
 @check_figures_equal()
-def test_plot_grate_full_period_all(fig_test, fig_ref):
+def test_plot_curva_epi_pais(fig_test, fig_ref):
     df = arcovid19.load_cases(
         cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
     # fig test
     test_ax = fig_test.subplots()
-    test_ax = df.plot("grate_full_period_all", ax=test_ax)
+    test_ax = df.plot("curva_epi_pais", ax=test_ax)
 
     # expected
     exp_ax = fig_ref.subplots()
-    df.plot.grate_full_period_all(ax=exp_ax)
+    df.plot.curva_epi_pais(ax=exp_ax)
 
 
 @check_figures_equal()
@@ -220,30 +221,6 @@ def test_plot_grate_full_period(fig_test, fig_ref):
     # expected
     exp_ax = fig_ref.subplots()
     df.plot.grate_full_period(ax=exp_ax)
-
-
-@check_figures_equal()
-def test_plot_grate_full_period_all_equivalent_calls(fig_test, fig_ref):
-    cases = arcovid19.load_cases(
-        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
-
-    # fig test
-    fig_test.set_size_inches(12, 12)
-    test_ax = fig_test.subplots()
-    cases.plot.grate_full_period_all(ax=test_ax)
-    test_ax.set_title("")
-
-    # expected
-    fig_ref.set_size_inches(12, 12)
-    exp_ax = fig_ref.subplots()
-
-    cases.plot.grate_full_period(
-        deceased=False, active=False, recovered=False, ax=exp_ax)
-    for prov in sorted(arcovid19.cases.CODE_TO_POVINCIA):
-        cases.plot.grate_full_period(
-            prov, deceased=False, active=False, recovered=False, ax=exp_ax)
-
-    exp_ax.set_title("")
 
 
 @check_figures_equal()
@@ -313,20 +290,6 @@ def test_plot_barplot(fig_test, fig_ref):
 
 
 @check_figures_equal()
-def test_plot_grate_full_period_all_commented(fig_test, fig_ref):
-    df = arcovid19.load_cases(
-        cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
-
-    # fig test
-    test_ax = fig_test.subplots()
-    test_ax = df.plot("grate_full_period_all_commented", ax=test_ax)
-
-    # expected
-    exp_ax = fig_ref.subplots()
-    df.plot.grate_full_period_all_commented(ax=exp_ax)
-
-
-@check_figures_equal()
 def test_plot_boxplot(fig_test, fig_ref):
     df = arcovid19.load_cases(
         cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
@@ -345,18 +308,15 @@ def test_plot_boxplot(fig_test, fig_ref):
 # =============================================================================
 
 @pytest.mark.parametrize(
-    "plot_name", [
-        "time_serie", "time_serie_all",
-        "grate_full_period", "grate_full_period_all"])
+    "plot_name", ["time_serie", "time_serie_all"])
 def test_plot_all_dates_ticks(plot_name):
     df = arcovid19.load_cases(
         cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
 
-    expected = [str(d.date()) for d in df.dates]
-
+    expected = [d.strftime(LABEL_DATE_FORMAT) for d in df.dates]
     ax = df.plot(plot_name)
     labels = [l.get_text() for l in ax.get_xticklabels()]
     ticks = ax.get_xticks()
 
-    assert labels == expected
     assert len(labels) == len(ticks)
+    assert labels == expected
