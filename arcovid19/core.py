@@ -24,6 +24,7 @@ __all__ = ["Frame", "Plotter"]
 # IMPORTS
 # =============================================================================
 
+import abc
 import logging
 
 import attr
@@ -41,9 +42,13 @@ logger = logging.getLogger("arcovid19.core")
 # =============================================================================
 
 @attr.s(repr=False)
-class Plotter:
+class Plotter(metaclass=abc.ABCMeta):
 
     cstats = attr.ib()
+
+    @abc.abstractproperty
+    def default_plot_name_method(self):
+        pass
 
     def __repr__(self):
         return f"CasesPlot({hex(id(self.cstats))})"
@@ -61,11 +66,15 @@ class Plotter:
 
 
 @attr.s(repr=False)
-class Frame:
+class Frame(metaclass=abc.ABCMeta):
 
     df = attr.ib()
     extra = attr.ib(factory=dict)
     plot = attr.ib(init=False)
+
+    @abc.abstractproperty
+    def plot_cls(self):
+        pass
 
     @plot.default
     def _plot_default(self):
@@ -84,7 +93,7 @@ class Frame:
         """x.__getattr__(y) <==> x.y
 
         Redirect all te missing calls first to extra and then
-        to the internal datadrame.
+        to the internal dataframe.
 
         """
         if a in self.extra:

@@ -36,6 +36,11 @@ from .cases import load_cases, CASES_URL
 
 DESCRIPTION = __doc__
 
+FOOTNOTES = """This software is under the BSD 3-Clause License.
+Copyright (c) 2020, IATE COVID-19 Task Force.
+For bug reporting or other instructions please check:
+https://github.com/ivco19/libs"""
+
 
 # =============================================================================
 # MAIN_
@@ -55,7 +60,7 @@ def cases(*, url=CASES_URL, force=False, out=None):
         If you want to ignore the local cache or retrieve a new value.
 
     """
-    cases = load_cases(url=url, force=force)
+    cases = load_cases(cases_url=url, force=force)
     if out is not None:
         cases.to_csv(out)
     else:
