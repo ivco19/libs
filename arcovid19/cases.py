@@ -43,6 +43,8 @@ import matplotlib.pyplot as plt
 
 import unicodedata
 
+from deprecated import deprecated
+
 from . import cache, core
 
 
@@ -159,10 +161,11 @@ class CasesPlot(core.Plotter):
         pdf = pd.DataFrame(columns)
         return pdf
 
-    # functions for backwards compatibility
+    @deprecated(version="0.5", reason="use curve_epi_country instead")
     def grate_full_period_all(self, *args, **kwargs):
         return self.curva_epi_pais(*args, **kwargs)
 
+    @deprecated(version="0.5", reason="use curve_epi_province instead")
     def grate_full_period(self, *args, **kwargs):
         return self.curva_epi_provincia(*args, **kwargs)
 
