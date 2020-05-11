@@ -34,6 +34,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import arcovid19
+from arcovid19.models import ModelResultFrame
 
 
 # =============================================================================
@@ -126,6 +127,28 @@ def test_SEIRF_migration():
 
     np.testing.assert_array_almost_equal(result.df, expected, decimal=8)
     assert result.model_name == "SEIRF"
+
+
+def test_always_return_model_frame():
+
+    curve_conf = {
+        'population': 600000,
+        'N_init': 10,
+        'R': 1.2,
+        'intervention_start': 15.0,
+        'intervention_end': 25.0,
+        'intervention_decrease': 70.0,
+        't_incubation': 5.0,
+        't_infectious': 9.0}
+    m_conf = {'t_max': 200.0, 'dt': 1.0}
+
+    curve = arcovid19.load_infection_curve(**curve_conf)
+    for mname in dir(curve):
+        method = getattr(curve, mname)
+        if mname.startswith("do_") and callable(method):
+            result = method(**m_conf)
+            assert isinstance(result, ModelResultFrame)
+            assert result.model_name == mname.split("_")[-1]
 
 
 # =============================================================================
