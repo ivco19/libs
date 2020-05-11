@@ -20,6 +20,7 @@ Authors
 -  Mauricio Koraj (Liricus SRL.).
 -  Vanessa Daza (IATE-OAC-UNC, FaMAF-UNC).
 -  Mariano Dominguez (IATE-OAC-UNC, FaMAF-UNC).
+-  Cristian Giuppone (IATE-OAC-UNC, FaMAF-UNC).
 -  Marcelo Lares (IATE-OAC-UNC, FaMAF-UNC).
 -  Nadia Luczywo (LIMI-FCEFyN-UNC, IED-FCE-UNC, FCA-IUA-UNDEF)
 -  Dante Paz (IATE-OAC-UNC, FaMAF-UNC).

@@ -28,6 +28,7 @@ __all__ = ["main"]
 import sys
 
 from .cases import load_cases, CASES_URL
+from .web import get_webapp
 
 
 # =============================================================================
@@ -67,8 +68,39 @@ def cases(*, url=CASES_URL, force=False, out=None):
         cases.to_csv(sys.stdout)
 
 
+def runwebserver(*, host=None, port=None, nodebug=False, load_dotenv=True):
+    """Run a development server for arcovid19 utilities.
+
+    host: str
+        the hostname to listen on. Set this to '0.0.0.0' to
+        have the server available externally as well. Defaults to
+        '127.0.0.1' or the host in the SERVER_NAME config variable
+        if present.
+
+    port: int
+        the port of the webserver. Defaults to 5000 or the
+        port defined in the SERVER_NAME config variable if present.
+
+    nodebug: bool
+        if given, disable debug mode. See
+
+    load_dotenv:
+        Load the nearest '.env' and '.flaskenv'
+        files to set environment variables. Will also change the working
+        directory to the directory containing the first file found.
+
+    """
+    app = get_webapp()
+    app.run(
+        host=host, port=port,
+        debug=(not nodebug),
+        load_dotenv=load_dotenv)
+
+
 def main():
     """Run the arcovid19 command line interface."""
     from clize import run
 
-    run(cases)
+    run(
+        cases, runwebserver,
+        description=DESCRIPTION, footnotes=FOOTNOTES)

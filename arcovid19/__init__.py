@@ -5,6 +5,7 @@
 #                     Juan B Cabral, Marcelo Lares,
 #                     Nadia Luczywo, Dante Paz, Rodrigo Quiroga,
 #                     Martín de los Ríos, Federico Stasyszyn
+#                     Cristian Giuppone.
 # License: BSD-3-Clause
 #   Full Text: https://raw.githubusercontent.com/ivco19/libs/master/LICENSE
 
@@ -28,3 +29,4 @@ __version__ = "0.5"
 from .cache import CACHE, from_cache  # noqa
 from .cases import load_cases  # noqa
 from .models import load_infection_curve  # noqa
+from .web import  get_webapp  # noqa
