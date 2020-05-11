@@ -25,17 +25,16 @@ __all__ = ["NodeNotFoundError"]
 # IMPORTS
 # =============================================================================
 
-# import numpy as np
 import pandas as pd
 
-# from matplotlib import pyplot as plt
-# import matplotlib.ticker as ticker
+from matplotlib import pyplot as plt
+import matplotlib.ticker as ticker
 
-# import seaborn as sns
+import seaborn as sns
 
 import attr
 
-# from . import cache, core
+from . import core
 
 
 # =============================================================================
@@ -310,6 +309,86 @@ class Graph:
 # API
 # =============================================================================
 
+class ModelResultPlotter(core.Plotter):
+    default_plot_name_method = "infection_curve"
+
+    def infection_curve(
+        self, only=None, fill=False,
+        log=False, ax=None, **kwargs
+    ):
+        """Plots the infection curve.
+
+        Parameters
+        ----------
+        only : list, optional
+            List of subset of columns of the models to be plotted.
+        fill : boolean of float, optional
+            If its true a all the area bellow the curve are filled with the
+            same color of the curve with en alpha of ``0.1``. If fill is a
+            float the value is interpreted as the alpha of the fill.
+        log : boolean, default=False
+            if
+        ax : matplotlib Axes, optional
+            Axes object to draw the plot onto, otherwise uses the current Axes.
+        kwargs : key, value mappings
+            Other keyword arguments are passed down to
+            :meth:`seaborn.lineplot`.
+
+        Returns
+        -------
+        ax : matplotlib Axes
+            Returns the Axes object with the plot drawn onto it.
+
+        """
+        df = self.frame.df
+        if only is not None:
+            df = df[only]
+
+        if ax is None:
+            ax = plt.gca()
+
+        if log:
+            ax.set(yscale="log")
+            ax.yaxis.set_major_formatter(
+                ticker.FuncFormatter(lambda y, _: '{:g}'.format(y)))
+
+        # our default values
+        kwargs.setdefault("linewidth", 2)
+        kwargs.setdefault("sort", False)
+        kwargs.setdefault("dashes", False)
+
+        sns.lineplot(data=df, ax=ax, **kwargs)
+
+        if fill:
+            alpha = 0.1 if isinstance(fill, bool) else fill
+            for line in ax.lines[:len(df.columns)]:
+                color = line.get_color()
+                line_x = line.get_xydata()[:, 0]
+                line_y = line.get_xydata()[:, 1]
+                ax.fill_between(line_x, line_y, color=color, alpha=alpha)
+
+        ax.set_xlabel('Time [days]')
+        ax.set_ylabel('Number infected')
+
+        mname = self.frame.model_name
+        pop = self.frame.population
+        ax.set_title(
+            f"Infection curve - Model: {mname} - Population: {pop}")
+
+        return ax
+
+
+class ModelResultFrame(core.Frame):
+    """Wrapper around the model results table..
+
+    This class adds functionalities around the dataframe.
+
+    The name of the model can be accesed as ``instance.modelname``.
+
+    """
+    plot_cls = ModelResultPlotter
+
+
 @attr.s(frozen=True)
 class InfectionCurve:
     """MArce documentame me siento sola.
@@ -357,7 +436,6 @@ class InfectionCurve:
 
     .. [1] “Stochastic SIR model with Python,” epirecipes. [Online].
        Available: https://tinyurl.com/y8zwvfk4. [Accessed: 09-May-2020].
-
 
     """
 
@@ -467,7 +545,10 @@ class InfectionCurve:
 
         df = pd.DataFrame(
             {'ts': ts, 'I': I, 'C': C, 'R': R}).set_index("ts")
-        return df
+
+        extra = attr.asdict(self)
+        extra["model_name"] = "SIR"
+        return ModelResultFrame(df=df, extra=extra)
 
     def do_SEIR(self, t_max=200, dt=1.):
         """This function implements a SEIR model without vital dynamics
@@ -572,7 +653,10 @@ class InfectionCurve:
 
         df = pd.DataFrame(
             {'ts': ts, 'S': S, 'E': E, 'I': I, 'R': R}).set_index("ts")
-        return df
+
+        extra = attr.asdict(self)
+        extra["model_name"] = "SEIR"
+        return ModelResultFrame(df=df, extra=extra)
 
     def do_SEIRF(self, t_max=200, dt=1.):
         """Documentame MARCE
@@ -680,7 +764,9 @@ class InfectionCurve:
         df = pd.DataFrame(
             {'ts': ts, 'S': S, 'E': E, 'I': I, 'R': R, 'F': F}).set_index("ts")
 
-        return df
+        extra = attr.asdict(self)
+        extra["model_name"] = "SEIRF"
+        return ModelResultFrame(df=df, extra=extra)
 
 
 # =============================================================================

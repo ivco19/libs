@@ -147,16 +147,16 @@ class CasesPlot(core.Plotter):
 
         columns = {}
         if confirmed:
-            cseries = odf.loc[(prov_code, 'C')][self.cstats.dates].values
+            cseries = odf.loc[(prov_code, 'C')][self.frame.dates].values
             columns[f"{prov_name} Confirmed"] = cseries / norm
         if active:
-            cseries = odf.loc[(prov_code, 'A')][self.cstats.dates].values
+            cseries = odf.loc[(prov_code, 'A')][self.frame.dates].values
             columns[f"{prov_name} Active"] = cseries / norm
         if recovered:
-            cseries = odf.loc[(prov_code, 'R')][self.cstats.dates].values
+            cseries = odf.loc[(prov_code, 'R')][self.frame.dates].values
             columns[f"{prov_name} Recovered"] = cseries / norm
         if deceased:
-            cseries = odf.loc[(prov_code, 'D')][self.cstats.dates].values
+            cseries = odf.loc[(prov_code, 'D')][self.frame.dates].values
             columns[f"{prov_name} Deceased"] = cseries / norm
         pdf = pd.DataFrame(columns)
         return pdf
@@ -203,7 +203,7 @@ class CasesPlot(core.Plotter):
             self.grate_full_period(provincia=None, ax=ax, **kwargs)
 
         exclude = [] if exclude is None else exclude
-        exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
+        exclude = [self.frame.get_provincia_name_code(e)[1] for e in exclude]
 
         ccolors = ['steelblue'] * 10 + ['peru'] * 10 + ['darkmagenta'] * 10
         cmarkers = ['o', '.', 'o', 'x', 'D']
@@ -260,7 +260,7 @@ class CasesPlot(core.Plotter):
                 alpha=aesthetics['alpha'],
                 **kwargs)
 
-        labels = [d.date() for d in self.cstats.dates]
+        labels = [d.date() for d in self.frame.dates]
         ispace = int(len(labels) / 10)
         ticks = np.arange(len(labels))[::ispace]
         slabels = [l.strftime("%d.%b") for l in labels][::ispace]
@@ -285,7 +285,7 @@ class CasesPlot(core.Plotter):
         # agregar eje x secundario
         if count_days == 'pandemia':
 
-            t = np.array([(dd - D0).days for dd in self.cstats.dates])
+            t = np.array([(dd - D0).days for dd in self.frame.dates])
 
             ax2 = ax.twiny()
             ax2.set_xlim(min(t), max(t))
@@ -299,7 +299,7 @@ class CasesPlot(core.Plotter):
 
             t = []
             d0 = dt.datetime.strptime("3/20/20", '%m/%d/%y')  # cuarentena
-            for dd in self.cstats.dates:
+            for dd in self.frame.dates:
                 elapsed_days = (dd - d0).days
                 t.append(elapsed_days)
             t = np.array(t)
@@ -328,7 +328,7 @@ class CasesPlot(core.Plotter):
         else:
             t = []
             d0 = dt.datetime.strptime("1/01/20", '%m/%d/%y')  # any day
-            for dd in self.cstats.dates:
+            for dd in self.frame.dates:
                 elapsed_days = (dd - d0).days
                 t.append(elapsed_days)
             t = np.array(t)
@@ -367,7 +367,7 @@ class CasesPlot(core.Plotter):
         if provincia is None:
             prov_name, prov_c = "Argentina", "ARG"
         else:
-            prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
+            prov_name, prov_c = self.frame.get_provincia_name_code(provincia)
 
         # normalizacion a la poblacion de cada provincia
         norm_factor = 1.
@@ -380,7 +380,7 @@ class CasesPlot(core.Plotter):
 
         # preparar dataframe
         pdf = self._plot_df(
-            odf=self.cstats.df, prov_name=prov_name, prov_code=prov_c,
+            odf=self.frame.df, prov_name=prov_name, prov_code=prov_c,
             confirmed=confirmed, active=active,
             recovered=recovered, deceased=deceased, norm=norm_factor)
 
@@ -402,7 +402,7 @@ class CasesPlot(core.Plotter):
         pdf.plot.line(ax=ax, **kwargs, **aesthetics)
 
         # elementos formales del grafico
-        labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.cstats.dates]
+        labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.frame.dates]
         ispace = int(len(labels) / 10)
         ticks = np.arange(len(labels))[::ispace]
         slabels = [l for l in labels][::ispace]
@@ -448,14 +448,14 @@ class CasesPlot(core.Plotter):
             self.time_serie(provincia=None, ax=ax, **kwargs)
 
         exclude = [] if exclude is None else exclude
-        exclude = [self.cstats.get_provincia_name_code(e)[1] for e in exclude]
+        exclude = [self.frame.get_provincia_name_code(e)[1] for e in exclude]
 
         for code in sorted(CODE_TO_POVINCIA):
             if code in exclude:
                 continue
             self.time_serie(provincia=code, ax=ax, **kwargs)
 
-        labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.cstats.dates]
+        labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.frame.dates]
         ticks = np.arange(len(labels))
 
         ax.set_xticks(ticks=ticks)
@@ -477,18 +477,18 @@ class CasesPlot(core.Plotter):
         if provincia is None:
             prov_name, prov_c = "Argentina", "ARG"
         else:
-            prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
+            prov_name, prov_c = self.frame.get_provincia_name_code(provincia)
 
         ax = plt.gca() if ax is None else ax
 
-        ts = self.cstats.restore_time_serie()
+        ts = self.frame.restore_time_serie()
         pdf = self._plot_df(
             odf=ts, prov_name=prov_name, prov_code=prov_c,
             confirmed=confirmed, active=active,
             recovered=recovered, deceased=deceased)
         pdf.plot.line(ax=ax, **kwargs)
 
-        labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.cstats.dates]
+        labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.frame.dates]
         ticks = np.arange(len(labels))
 
         ax.set_xticks(ticks=ticks)
@@ -514,9 +514,9 @@ class CasesPlot(core.Plotter):
         if provincia is None:
             prov_name, prov_c = "Argentina", "ARG"
         else:
-            prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
+            prov_name, prov_c = self.frame.get_provincia_name_code(provincia)
 
-        ts = self.cstats.restore_time_serie()
+        ts = self.frame.restore_time_serie()
         pdf = self._plot_df(
             odf=ts, prov_name=prov_name, prov_code=prov_c,
             confirmed=confirmed, active=active,
@@ -527,7 +527,7 @@ class CasesPlot(core.Plotter):
         ax.set_xlabel("Date")
         ax.set_ylabel("N")
 
-        labels = [d.date() for d in self.cstats.dates]
+        labels = [d.date() for d in self.frame.dates]
         ax.set_xticklabels(labels, rotation=45)
         ax.legend()
 
@@ -543,9 +543,9 @@ class CasesPlot(core.Plotter):
         if provincia is None:
             prov_name, prov_c = "Argentina", "ARG"
         else:
-            prov_name, prov_c = self.cstats.get_provincia_name_code(provincia)
+            prov_name, prov_c = self.frame.get_provincia_name_code(provincia)
 
-        ts = self.cstats.restore_time_serie()
+        ts = self.frame.restore_time_serie()
         pdf = self._plot_df(
             odf=ts, prov_name=prov_name, prov_code=prov_c,
             confirmed=confirmed, active=active,

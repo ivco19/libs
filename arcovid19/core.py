@@ -44,14 +44,14 @@ logger = logging.getLogger("arcovid19.core")
 @attr.s(repr=False)
 class Plotter(metaclass=abc.ABCMeta):
 
-    cstats = attr.ib()
+    frame = attr.ib()
 
     @abc.abstractproperty
     def default_plot_name_method(self):
         pass
 
     def __repr__(self):
-        return f"CasesPlot({hex(id(self.cstats))})"
+        return f"CasesPlot({hex(id(self.frame))})"
 
     def __call__(self, plot_name=None, ax=None, **kwargs):
         """x.__call__() == x()"""
@@ -79,7 +79,7 @@ class Frame(metaclass=abc.ABCMeta):
     @plot.default
     def _plot_default(self):
         plot_cls = self.plot_cls
-        return plot_cls(cstats=self)
+        return plot_cls(frame=self)
 
     def __dir__(self):
         """x.__dir__() <==> dir(x)"""
