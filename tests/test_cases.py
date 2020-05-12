@@ -5,6 +5,7 @@
 #                     Juan B Cabral, Marcelo Lares,
 #                     Nadia Luczywo, Dante Paz, Rodrigo Quiroga,
 #                     Martín de los Ríos, Federico Stasyszyn
+#                     Cristian Giuppone.
 # License: BSD-3-Clause
 #   Full Text: https://raw.githubusercontent.com/ivco19/libs/master/LICENSE
 
@@ -154,8 +155,8 @@ def test_grate_provincia_invalida():
 def test_get_item():
     df = arcovid19.load_cases(
         cases_url=LOCAL_CASES, areas_pop_url=LOCAL_AREA_POP)
-    value = df[df.provincia_status == f"CBA_C"]
-    expected = df.df[df.provincia_status == f"CBA_C"]
+    value = df[df.provincia_status == "CBA_C"]
+    expected = df.df[df.provincia_status == "CBA_C"]
     assert np.all(value == expected)
 
 
@@ -315,7 +316,7 @@ def test_plot_all_dates_ticks(plot_name):
 
     expected = [d.strftime(LABEL_DATE_FORMAT) for d in df.dates]
     ax = df.plot(plot_name)
-    labels = [l.get_text() for l in ax.get_xticklabels()]
+    labels = [tlabel.get_text() for tlabel in ax.get_xticklabels()]
     ticks = ax.get_xticks()
 
     assert len(labels) == len(ticks)

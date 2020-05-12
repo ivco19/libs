@@ -5,6 +5,7 @@
 #                     Juan B Cabral, Mariano Dominguez, Marcelo Lares,
 #                     Nadia Luczywo, Dante Paz, Rodrigo Quiroga,
 #                     Martín de los Ríos, Federico Stasyszyn
+#                     Cristian Giuppone.
 # License: BSD-3-Clause
 #   Full Text: https://raw.githubusercontent.com/ivco19/libs/master/LICENSE
 
@@ -403,27 +404,27 @@ class InfectionCurve:
     R: float (default=1.2)
         Reproduction number.
     intervention_start: int (default=15)
-        start intervention days.
+        Start intervention days.
     intervention_end: int (default=25)
-        end intervention days.
+        End intervention days.
     intervention_decrease: float (default=70)
-        decrease in transmission for intervention, percentage (0-100)
+        Decrease in transmission for intervention, percentage (0-100)
         100 means total isolation.
     t_incubation: float (default=5.)
         Length of incubation period.
     t_infectiou: = (default=9.)
         Duration patient is infectious.
     t_death: float (default=32.)
-        time from end of incubation to death.
+        Time from end of incubation to death.
     mild_recovery: float (default=0.2)
-        recovery time for mild (not severnot severe) cases, days
+        Recovery time for mild (not severnot severe) cases, days
         hospitalization rate (fraction).
     bed_stay: float (default=28.)
-        length of hospital stay, days.
+        Length of hospital stay, days.
     bed_rate: float (default=0.2)
-        hospitalization rate (fraction).
+        Hospitalization rate (fraction).
     bed_wait: int (default=5)
-        time from first synthoms to hospitalization (days).
+        Time from first synthoms to hospitalization (days).
     beta: float (default=1.236)
         SEIR Model beta ($\\beta$).
     sigma: float (default=1.1)

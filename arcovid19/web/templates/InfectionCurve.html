@@ -1,1 +1,53 @@
-fooo
+{% extends "base.html" %}
+
+{% block page_title %}Infection curve models{% endblock %}
+{% block title %}Infection curve models{% endblock %}
+
+{% block page_css %}
+<style>
+    table.table td, table.table th,
+    table.table label,
+    table.table .form-control {
+
+        padding-bottom: 0px !important;
+        padding-top: 8px !important;
+    }
+
+    table.table td input {
+        width: 100%;
+    }
+
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col col-md-4">
+            <form method="GET" action="/">
+                    <table class="table table-borderless table-sm">
+                    {% for field in form %}
+                    <tr>
+                        <th>{{ field.label() }}</th>
+                        <td>{{ field() }} </td>
+                        <td>
+                            <a class="text-info" tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="{{field.label.text}}" data-placement="right" data-content="{{ field.description }}">
+                                <i class="far fa-question-circle"></i></td>
+                            </a>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <button type="submit" class="btn btn-block btn-primary">
+                    Run <i class="fas fa-fast-forward"></i>
+                </button>
+
+            </form>
+        </div>
+        <div class="col col-md-8">
+            plots here
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -27,6 +27,8 @@ implementation of all the project with the blueprint
 # IMPORTS
 # =============================================================================
 
+import os
+
 import flask
 
 from . import bp
@@ -39,4 +41,12 @@ from . import bp
 def get_webapp(**kwargs):
     app = flask.Flask("arcovid19.web")
     app.register_blueprint(bp.wavid19)
+
+    app.config.update(
+        DEBUG=True,
+        TESTING=False,
+        SECRET_KEY=os.urandom(16))
+
+    app.config.from_envvar('ARCOVID19_WEB_SETTINGS', silent=True)
+
     return app

@@ -264,7 +264,7 @@ class CasesPlot(core.Plotter):
         labels = [d.date() for d in self.frame.dates]
         ispace = int(len(labels) / 10)
         ticks = np.arange(len(labels))[::ispace]
-        slabels = [l.strftime("%d.%b") for l in labels][::ispace]
+        slabels = [lbl.strftime("%d.%b") for lbl in labels][::ispace]
         lmin = labels[0].strftime("%d.%b")
         lmax = labels[-1].strftime("%d.%b")
 
@@ -406,7 +406,7 @@ class CasesPlot(core.Plotter):
         labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.frame.dates]
         ispace = int(len(labels) / 10)
         ticks = np.arange(len(labels))[::ispace]
-        slabels = [l for l in labels][::ispace]
+        slabels = [lbl for lbl in labels][::ispace]
         lmin = labels[0]
         lmax = labels[-1]
 

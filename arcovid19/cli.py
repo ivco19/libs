@@ -5,6 +5,7 @@
 #                     Juan B Cabral, Marcelo Lares,
 #                     Nadia Luczywo, Dante Paz, Rodrigo Quiroga,
 #                     Martín de los Ríos, Federico Stasyszyn
+#                     Cristian Giuppone.
 # License: BSD-3-Clause
 #   Full Text: https://raw.githubusercontent.com/ivco19/libs/master/LICENSE
 
@@ -68,7 +69,7 @@ def cases(*, url=CASES_URL, force=False, out=None):
         cases.to_csv(sys.stdout)
 
 
-def runwebserver(*, host=None, port=None, nodebug=False, load_dotenv=True):
+def webserver(*, host=None, port=None, nodebug=False, load_dotenv=True):
     """Run a development server for arcovid19 utilities.
 
     host: str
@@ -102,5 +103,5 @@ def main():
     from clize import run
 
     run(
-        cases, runwebserver,
+        cases, webserver,
         description=DESCRIPTION, footnotes=FOOTNOTES)

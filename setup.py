@@ -41,7 +41,8 @@ PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 
 REQUIREMENTS = [
     "numpy", "pandas", "clize", "diskcache",
-    "xlrd", "attrs", "deprecated", "flask",
+    "xlrd", "attrs", "deprecated",
+    "flask", "Flask-WTF", "numpydoc",
     "matplotlib", "seaborn"]
 
 
@@ -56,7 +57,7 @@ DESCRIPTION = (
 
 with open(PATH / "arcovid19" / "__init__.py") as fp:
     VERSION = [
-        l for l in fp.readlines() if l.startswith("__version__")
+        line for line in fp.readlines() if line.startswith("__version__")
     ][0].split("=", 1)[-1].strip().replace('"', "")
 
 

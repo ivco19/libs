@@ -1,0 +1,133 @@
+<!--
+This file is part of Arcovid-19 .
+Copyright (c) 2020, Juan B Cabral, Vanessa Daza, Diego García Lambas,
+                    Marcelo Lares, Nadia Luczywo, Dante Paz, Rodrigo Quiroga,
+                    Bruno Sanchez, Federico Stasyszyn.
+                    Cristian Giuppone.
+License: BSD-3-Clause
+  Full Text: https://raw.githubusercontent.com/ivco19/libs/master/LICENSE
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {# base css #}
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/lux/bootstrap.min.css" rel="stylesheet" integrity="sha384-oOs/gFavzADqv3i5nCM+9CzXe3e5vXLXZ5LZ7PplpsWpTCufB7kqkTlC9FtZ5nJo" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.4.4/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}?favicon=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='arcovid19.css') }}" />
+
+    {% block page_css %}{% endblock %}
+    <title>Arcovid-19 - {% block page_title %}{% endblock page_title %}</title>
+
+    <meta name="generator" content="Arcovid19" />
+    <meta name="description" content="This library contains the utilities to access different Argentina-Related databases of COVID-19 data from the IATE task force.">
+    <meta name="license" content="BSD-3 (https://github.com/ivco19/libs/blob/master/LICENSE)">
+    <meta name="source-code" content="https://github.com/ivco19/libs/">
+    <meta name="author" content="Arcovid19">
+    </head>
+<body>
+    <!-- SCRIPTS -->
+    <div id="global-js">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/js/bootstrap.bundle.min.js" integrity="sha384-Iep5TjrwnXOp2AdreAjhlprhxI5Ix8Y3I/zJd1tNQZQmonaE3i6fTdrvIG9YjOWl" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.bundle.min.js" integrity="sha384-zDnhMsjVZfS3hiP7oCBRmfjkQC4fzxVxFhBx8Hkz2aZX8gEvA/jsP3eXRCvzTofP" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.4.4/js/bootstrap-datetimepicker.min.js"></script>
+        <script src="{{ url_for('static', filename='arcovid19.css') }}"></script>
+        <script>
+        $(document).ready(function(){
+            $('.datetimeinput').datetimepicker({
+                format: "yyyy-mm-dd hh:ii"});
+            $('.datetimeinput').prop(readonly=true);
+            $('.datetimeinput').parent().addClass("input-group");
+            $('.datetimeinput').parent().append(`
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon1">
+                        <i class="fas fa-calendar"></i></span>
+                    </span>
+                </div>`);
+
+            $(function () {
+                $('[data-toggle="popover"]').popover()
+            });
+        });
+        </script>
+    </div>
+    <!--SCRIPTS-->
+    <div id="page-scripts">
+        {% block page_js %}{% endblock %}
+    </div>
+
+    <!-- NAVBAR -->
+<div class="container-fluid p-0">
+    <nav class="navbar navbar-icon-top navbar-expand-md bg-dark navbar-dark">
+
+        <!-- Brand -->
+        <a class="navbar-brand" href="#">
+            <strong class="text-success">AR</strong>covid19
+        </a>
+
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar links -->
+        <div class="navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#}">
+                        <i class="fa fa-chart-line"></i>
+                        IC Models
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+</div>
+<!--NAVBAR -->
+
+<!-- MAIN -->
+<div class="container-fluid p-0">
+    <main class="col bg-faded py-3">
+        <div id="content-title"><h2>
+            {% block title %}{% endblock title %}</h2>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- FOOTER -->
+<div class="container-fluid footer p-0">
+    <footer>
+        <div class="footer-copyright text-center py-3">
+            © 2020 Copyright:
+            <a target="_new" href="https://ivco19.github.io/"> Arcovid19</a>
+            <br>
+            <a href="https://arcovid19.readthedocs.io/" target="_new">More info</a>
+        </div>
+    </footer>
+</div>
+
+
+<!-- MODALS -->
+<div class="container-fluid">
+    <div id="modals">
+        {% block modals %}{% endblock %}
+    </div>
+</div>
+
+</body>
+</html>
