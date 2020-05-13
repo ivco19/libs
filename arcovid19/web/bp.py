@@ -35,6 +35,8 @@ import matplotlib.pyplot as plt
 import flask
 from flask.views import View
 
+import pandas as pd
+
 from ..models import load_infection_curve
 from . import forms
 
@@ -136,8 +138,21 @@ class DownloadView(InfectionCurveView):
         now = dt.datetime.now().isoformat()
         fname = f"arcovid19_{result.model_name}_{now}.xlsx"
 
+        # the containers
         fileobj = io.BytesIO()
-        result.to_excel(fileobj)
+        writer = pd.ExcelWriter(fileobj)
+
+        # write the result
+        result.to_excel(writer, sheet_name="Data")
+
+        # retrieve th config
+        config = pd.DataFrame([context_data["form"].data]).T
+        config.index.name = "Attribute"
+        config.columns = ["Value"]
+        config.to_excel(writer, sheet_name="Config")
+
+        # write to the object
+        writer.save()
 
         response = flask.make_response(fileobj.getvalue())
         response.headers.set('Content-Type', self.content_type)
