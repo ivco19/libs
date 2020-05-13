@@ -25,7 +25,11 @@
         width: 100%;
     }
 
-     svg {
+    table.dataframe {
+        width: 100%;
+    }
+
+    svg {
      display: block;
      border: none;
      position: absolute;
@@ -83,6 +87,9 @@
                     {% endif %}
                 </li>
                 {% endfor %}
+                <li class="nav-item">
+                    <a class="nav-link" id="data-tab" data-toggle="tab" href="#data" role="tab" aria-controls="data" aria-selected="false">Data</a>
+                </li>
               </ul>
               <div class="tab-content" id="myTabContent">
                 {% for pname, plot in plots.items() %}
@@ -96,12 +103,32 @@
                     </div>
                     {% endif %}
                 {% endfor %}
-                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
-                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+                <div class="tab-pane fade" id="data" role="tabpanel" aria-labelledby="data-tab">
+                    {{result.to_html()|safe}}
+                </div>
               </div>
               {% endif %}
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block page_js %}
+<script>
+$(document).ready(function(){
+    $('table.dataframe').DataTable({
+        "scrollCollapse": true,
+        "paging":         false,
+        "width": 100
+    });
+
+    $("table.dataframe").removeAttr("style");
+    $("table.dataframe").addClass("table table-striped display compact");
+    $("table.dataframe th").addClass("table-dark");
+
+    $("table.dataframe th.sorting").addClass("text-info").append(
+        '<span class="float-right"><i class="fas fa-sort"></i></span>');
+
+});
+</script>
 {% endblock %}

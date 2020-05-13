@@ -76,7 +76,7 @@ class InfectionCurveView(TemplateView):
         buf = io.StringIO()
 
         fig.tight_layout()
-        fig.savefig(buf, format='svg',pad_inches = 0)
+        fig.savefig(buf, format='svg')
         svg = buf.getvalue()
         buf.close()
 
@@ -84,7 +84,7 @@ class InfectionCurveView(TemplateView):
 
     def make_plots(self, result):
         fig_linear, ax_linear = self.subplots()
-        result.plot(ax=ax_linear)
+        result.plot(ax=ax_linear, fill=.05)
 
         fig_log, ax_log = self.subplots()
         result.plot(ax=ax_log, log=True)
@@ -116,6 +116,9 @@ class InfectionCurveView(TemplateView):
 
             # create the plots
             context_data["plots"] = self.make_plots(result)
+
+            # add the results to the context
+            context_data["result"] = result
 
         context_data["form"] = form
         return context_data

@@ -69,7 +69,11 @@ def cases(*, url=CASES_URL, force=False, out=None):
         cases.to_csv(sys.stdout)
 
 
-def webserver(*, host=None, port=None, nodebug=False, load_dotenv=True):
+def webserver(
+    *,
+    host=None, port=None, nodebug=False,
+    reload=False, load_dotenv=True
+):
     """Run a development server for arcovid19 utilities.
 
     host: str
@@ -83,7 +87,10 @@ def webserver(*, host=None, port=None, nodebug=False, load_dotenv=True):
         port defined in the SERVER_NAME config variable if present.
 
     nodebug: bool
-        if given, disable debug mode. See
+        if given, disable debug mode.
+
+    reload: bool
+        If its True any change of the code will restart the webserver.
 
     load_dotenv:
         Load the nearest '.env' and '.flaskenv'
@@ -94,6 +101,7 @@ def webserver(*, host=None, port=None, nodebug=False, load_dotenv=True):
     app = get_webapp()
     app.run(
         host=host, port=port,
+        use_reloader=True,
         debug=(not nodebug),
         load_dotenv=load_dotenv)
 
