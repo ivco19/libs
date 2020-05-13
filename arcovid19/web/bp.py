@@ -25,32 +25,19 @@ __all__ = ["wavid19"]
 # IMPORTS
 # =============================================================================
 
-import attr
+import io
+import base64
+import functools
+
+import jinja2
+
+import matplotlib.pyplot as plt
 
 import flask
 from flask.views import View
 
-import flask_wtf as fwtf
-
-import wtforms as wtf
-from wtforms.fields import html5
-import wtforms.validators as vldt
-
-from numpydoc import docscrape
-
-from ..models import InfectionCurve
-
-
-# =============================================================================
-# CONSTANTS
-# =============================================================================
-
-PYTYPE_TO_WTF = {
-    bool: wtf.BooleanField,
-    int: html5.IntegerField,
-    float: html5.DecimalField,
-    str: wtf.StringField
-}
+from ..models import load_infection_curve
+from . import forms
 
 
 # =============================================================================
@@ -78,64 +65,60 @@ class TemplateView(View):
 # =============================================================================
 
 class InfectionCurveView(TemplateView):
+
+    methods = ['GET', 'POST']
     template_name = "InfectionCurve.html"
 
+    def subplots(self):
+        return plt.subplots(frameon=False, figsize=(12, 8))
+
+    def get_img(self, fig):
+        buf = io.StringIO()
+
+        fig.tight_layout()
+        fig.savefig(buf, format='svg',pad_inches = 0)
+        svg = buf.getvalue()
+        buf.close()
+
+        return jinja2.Markup(svg)
+
+    def make_plots(self, result):
+        fig_linear, ax_linear = self.subplots()
+        result.plot(ax=ax_linear)
+
+        fig_log, ax_log = self.subplots()
+        result.plot(ax=ax_log, log=True)
+
+        return {
+            "Linear": self.get_img(fig_linear),
+            "Log": self.get_img(fig_log)
+        }
+
     def get_context_data(self):
-        # form metaclass
-        Meta = type("Meta", (object,), {"csrf": False})
+        context_data = {}
 
-        # here gone all the fields
-        form_fields = {"Meta": Meta}
+        form = forms.InfectionCurveForm()
+        if form.validate_on_submit():
+            # get all the data as string
+            data = form.data.copy()
 
-        # this gonna store all the model choices
-        models = []
-        for mname, method in vars(InfectionCurve).items():
-            if mname.startswith("do_") and callable(method):
-                label = mname.split("_", 1)[-1]
-                models.append((mname, label))
+            # extract the model method name
+            method_name = data.pop("model")
 
-        # add the model select to the form
-        form_fields["model"] = wtf.SelectField(
-            'Model', choices=models, description="Compartmental model.",
-            render_kw={"class": "custom-select custom-select-sm"})
+            # instantiate the curve
+            curve = load_infection_curve(**data)
 
-        # extract all the fields doc from the class documentation
-        class_docs = docscrape.ClassDoc(InfectionCurve)
-        docs = {
-            p.name.split(":")[0]: " ".join(p.desc).strip()
-            for p in class_docs.get("Parameters")}
+            # extract the method
+            method = getattr(curve, method_name)
 
-        # create one field for attribute
-        for aname, afield in attr.fields_dict(InfectionCurve).items():
-            # extract doc
-            description = docs.get(aname)
+            # get the result
+            result = method()
 
-            # extract the label from the field name
-            label = " ".join(aname.split("_")).title()
+            # create the plots
+            context_data["plots"] = self.make_plots(result)
 
-            # add all the validators
-            validators = [vldt.DataRequired()]
-
-            # add the classes to the field element
-            render_kw = {"class": "form-control form-control-sm"}
-
-            # determine the field type
-            Field = PYTYPE_TO_WTF.get(afield.type, wtf.StringField)
-
-            # create the field
-            ffield = Field(
-                label,
-                description=description,
-                default=afield.default,
-                validators=validators,
-                render_kw=render_kw)
-            form_fields[aname] = ffield
-
-        # create the form itself
-        InfectionCurveForm = type(
-            "InfectionCurveForm", (fwtf.FlaskForm,), form_fields)
-
-        return {"form": InfectionCurveForm()}
+        context_data["form"] = form
+        return context_data
 
 
 # =============================================================================
@@ -147,4 +130,4 @@ wavid19 = flask.Blueprint("arcovid19", "arcovid19.web.bp")
 wavid19.add_url_rule(
     '/', view_func=InfectionCurveView.as_view("index"))
 wavid19.add_url_rule(
-    '/icurve', view_func=InfectionCurveView.as_view("ivcurve"))
+    '/icurve', view_func=InfectionCurveView.as_view("icurve"))

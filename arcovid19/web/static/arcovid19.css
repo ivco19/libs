@@ -8,6 +8,10 @@ License: BSD-3-Clause
   Full Text: https://raw.githubusercontent.com/ivco19/libs/master/LICENSE */
 
 
+h2 {
+    font-size: 1.25rem;
+}
+
 footer a{
   color: #4bbf73;
 }

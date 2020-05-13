@@ -1,7 +1,15 @@
 {% extends "base.html" %}
 
 {% block page_title %}Infection curve models{% endblock %}
-{% block title %}Infection curve models{% endblock %}
+{% block title %}Infection curve models
+
+<span class="float-right">
+    <a type="submit" class="btn btn-sm btn-warning" href="{{ url_for('arcovid19.icurve') }}">
+        Reset <i class="fas fa-sync"></i>
+    </a>
+</span>
+
+{% endblock %}
 
 {% block page_css %}
 <style>
@@ -17,6 +25,17 @@
         width: 100%;
     }
 
+     svg {
+     display: block;
+     border: none;
+     position: absolute;
+     top: 5%;
+     left: 5%;
+     width: 90%;
+     height: 90%;
+     background: #fff;
+   }
+
 
 </style>
 {% endblock %}
@@ -25,8 +44,11 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col col-md-4">
-            <form method="GET" action="/">
-                    <table class="table table-borderless table-sm">
+            <form method="POST" action="">
+                {% if form.errors %}
+                    {{ form.errors }}
+                {% endif %}
+                <table class="table table-borderless table-sm">
                     {% for field in form %}
                     <tr>
                         <th>{{ field.label() }}</th>
@@ -38,14 +60,46 @@
                     </tr>
                     {% endfor %}
                 </table>
-                <button type="submit" class="btn btn-block btn-primary">
-                    Run <i class="fas fa-fast-forward"></i>
-                </button>
-
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" class="btn btn-block btn-primary">
+                                Run <i class="fas fa-fast-forward"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
         <div class="col col-md-8">
-            plots here
+            {% if plots %}
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                {% for pname in plots.keys() %}
+                <li class="nav-item">
+                    {% if loop.first %}
+                    <a class="nav-link active" id="{{pname}}-tab" data-toggle="tab" href="#plot-{{pname}}" role="tab" aria-controls="{{pname}}" aria-selected="true">{{pname}}</a>
+                    {% else %}
+                    <a class="nav-link" id="{{pname}}-tab" data-toggle="tab" href="#plot-{{pname}}" role="tab" aria-controls="{{pname}}" aria-selected="false">{{pname}}</a>
+                    {% endif %}
+                </li>
+                {% endfor %}
+              </ul>
+              <div class="tab-content" id="myTabContent">
+                {% for pname, plot in plots.items() %}
+                    {% if loop.first %}
+                    <div class="tab-pane fade show active" id="plot-{{pname}}" role="tabpanel" aria-labelledby="{{pname}}-tab">
+                        {{plot}}
+                    </div>
+                    {% else %}
+                    <div class="tab-pane fade show" id="plot-{{pname}}" role="tabpanel" aria-labelledby="{{pname}}-tab">
+                        {{plot}}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+              </div>
+              {% endif %}
         </div>
     </div>
 </div>
