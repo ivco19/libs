@@ -23,6 +23,8 @@
 # IMPORTS
 # =============================================================================
 
+import inspect
+
 import flask_wtf as fwtf
 
 import wtforms as wtf
@@ -58,6 +60,9 @@ PYTYPE_TO_WTF = {
 DEFAULT_VALIDATORS = [vldt.InputRequired()]
 
 
+DEFAULT_RENDER_KW = {"class": "form-control form-control-sm"}
+
+
 # =============================================================================
 # INFECTION FORM
 # =============================================================================
@@ -71,11 +76,12 @@ def make_InfectionCurveForm():
     form_fields = {"Meta": Meta}
 
     # this gonna store all the model choices
-    models = []
+    models, methods = [], []
     for mname, method in vars(InfectionCurve).items():
         if mname.startswith("do_") and callable(method):
             label = mname.split("_", 1)[-1]
             models.append((mname, label))
+            methods.append(method)
 
     # add the model select to the form
     form_fields["model"] = wtf.SelectField(
@@ -84,6 +90,49 @@ def make_InfectionCurveForm():
         description="Compartmental model.",
         render_kw={"class": "custom-select custom-select-sm"},
         default=models[0][0])
+
+    # now we add the same parameters for all the methods
+    for method in methods:
+
+        # extract all the fields doc from the method documentation
+        mtd_docs = docscrape.FunctionDoc(method)
+        docs = {
+            p.name.split(":")[0]: " ".join(p.desc).strip()
+            for p in mtd_docs.get("Parameters")}
+
+        # extract all the parameters
+        params = inspect.signature(method).parameters
+        for idx, param in enumerate(params.values()):
+            if idx == 0 or param.name in form_fields:
+                continue
+
+            # extract doc
+            description = docs.get(param.name)
+
+            # extract the label from the name
+            label = " ".join(param.name.split("_")).title()
+
+            # add all the validators
+            validators = list(DEFAULT_VALIDATORS)
+
+            # add the classes to the field element
+            render_kw = dict(DEFAULT_RENDER_KW)
+            render_kw["data-ptype"] = "model-param"
+
+            # the default
+            default = param.default
+
+            # the type based on the default
+            Field = PYTYPE_TO_WTF.get(type(default), wtf.StringField)
+
+            # create the field
+            ffield = Field(
+                label,
+                description=description,
+                default=default,
+                validators=validators,
+                render_kw=render_kw)
+            form_fields[param.name] = ffield
 
     # extract all the fields doc from the class documentation
     class_docs = docscrape.ClassDoc(InfectionCurve)
@@ -103,7 +152,8 @@ def make_InfectionCurveForm():
         validators = list(DEFAULT_VALIDATORS)
 
         # add the classes to the field element
-        render_kw = {"class": "form-control form-control-sm"}
+        render_kw = dict(DEFAULT_RENDER_KW)
+        render_kw["data-ptype"] = "curve-param"
 
         # determine the field type
         Field = PYTYPE_TO_WTF.get(afield.type, wtf.StringField)

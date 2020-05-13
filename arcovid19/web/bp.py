@@ -26,6 +26,7 @@ __all__ = ["wavid19"]
 # =============================================================================
 
 import io
+import inspect
 import datetime as dt
 
 import jinja2
@@ -37,7 +38,7 @@ from flask.views import View
 
 import pandas as pd
 
-from ..models import load_infection_curve
+from ..models import load_infection_curve, InfectionCurve
 from . import forms
 
 
@@ -103,17 +104,22 @@ class InfectionCurveView(TemplateView):
             # get all the data as string
             data = form.data.copy()
 
-            # extract the model method name
+            # extract the model method name and the method from the class
             method_name = data.pop("model")
+            method = getattr(InfectionCurve, method_name)
+
+            # extract all the parameters for the model itself
+            parameters = list(inspect.signature(method).parameters)[1:]
+            model_params = {p: data.pop(p) for p in parameters}
+
+            # remove all unused models params
+            # TODO: remove all unused models params
 
             # instantiate the curve
             curve = load_infection_curve(**data)
 
-            # extract the method
-            method = getattr(curve, method_name)
-
             # get the result
-            result = method()
+            result = method(curve, **model_params)
 
             # create the plots
             context_data["plots"] = self.make_plots(result)

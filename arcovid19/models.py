@@ -468,9 +468,9 @@ class InfectionCurve:
         Parameters
         ----------
         t_max: int (default=200)
-            time range [days],
+            Time range [days].
         dt: float (default=1.)
-            time step [days].
+            Time step [days].
 
         Returns
         -------
@@ -560,9 +560,9 @@ class InfectionCurve:
         Parameters
         ----------
         t_max: int (default=200)
-            time range [days],
+            Time range [days].
         dt: float (default=1.)
-            time step [days].
+            Time step [days].
 
         Returns
         -------
@@ -665,9 +665,9 @@ class InfectionCurve:
         Parameters
         ----------
         t_max: int (default=200)
-            time range [days],
+            Time range [days].
         dt: float (default=1.)
-            time step [days].
+            Time step [days].
 
         Returns
         -------
