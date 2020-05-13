@@ -85,7 +85,7 @@ class InfectionCurveView(TemplateView):
 
     def make_plots(self, result):
         fig_linear, ax_linear = self.subplots()
-        result.plot(ax=ax_linear, fill=.05)
+        result.plot(ax=ax_linear)
 
         fig_log, ax_log = self.subplots()
         result.plot(ax=ax_log, log=True)

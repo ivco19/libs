@@ -54,11 +54,11 @@
         <div class="col col-md-4">
             <form id="params" method="POST" action="">
                 {% if form.errors %}
-                    {{ form.errors }}
+                    <p class="text-danger">Something gone wrong!</p>
                 {% endif %}
                 <table class="table table-borderless table-sm">
                     {% for field in form %}
-                    <tr>
+                    <tr class="{% if field.errors %} text-danger {% endif %}">
                         <th>{{ field.label() }}</th>
                         <td>{{ field() }} </td>
                         <td>
@@ -66,6 +66,12 @@
                                 <i class="far fa-question-circle"></i></td>
                             </a>
                     </tr>
+                    {% for error in field.errors %}
+                    <tr class="text-danger">
+                        <td></td>
+                        <td>{{error}}</td>
+                    </tr>
+                    {% endfor %}
                     {% endfor %}
                 </table>
                 <div>
