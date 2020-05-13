@@ -15,3 +15,7 @@ h2 {
 footer a{
   color: #4bbf73;
 }
+
+.hide {
+    display: none;
+}

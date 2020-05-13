@@ -68,14 +68,10 @@
                     </tr>
                     {% endfor %}
                 </table>
-                <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            <button type="submit" class="btn btn-block btn-primary">
-                                Run <i class="fas fa-fast-forward"></i>
-                            </button>
-                        </div>
-                    </div>
+                <div>
+                    <button type="submit" class="btn btn-block btn-primary">
+                        Run <i class="fas fa-fast-forward"></i>
+                    </button>
                 </div>
             </form>
         </div>
@@ -109,6 +105,14 @@
                 {% endfor %}
                 <div class="tab-pane fade" id="data" role="tabpanel" aria-labelledby="data-tab">
                     <div id="data-container">
+                        <form action="{{ url_for('arcovid19.download_model') }}" class="float-right" method="post">
+                            <div class="hide">
+                                {% for field in form %}{{ field() }}{% endfor %}
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-success">
+                                Download <i class="fas fa-download"></i>
+                            </button>
+                        </form>
                         {{result.to_html()|safe}}
                     </div>
                 </div>

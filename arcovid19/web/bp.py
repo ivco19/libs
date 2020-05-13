@@ -26,8 +26,7 @@ __all__ = ["wavid19"]
 # =============================================================================
 
 import io
-import base64
-import functools
+import datetime as dt
 
 import jinja2
 
@@ -124,6 +123,30 @@ class InfectionCurveView(TemplateView):
         return context_data
 
 
+class DownloadView(InfectionCurveView):
+
+    methods = ['POST']
+    content_type = (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+    def dispatch_request(self):
+        context_data = self.get_context_data()
+        result = context_data["result"]
+
+        now = dt.datetime.now().isoformat()
+        fname = f"arcovid19_{result.model_name}_{now}.xlsx"
+
+        fileobj = io.BytesIO()
+        result.to_excel(fileobj)
+
+        response = flask.make_response(fileobj.getvalue())
+        response.headers.set('Content-Type', self.content_type)
+        response.headers.set(
+            'Content-Disposition', 'attachment', filename=fname)
+
+        return response
+
+
 # =============================================================================
 # Blueprint
 # =============================================================================
@@ -134,3 +157,5 @@ wavid19.add_url_rule(
     '/', view_func=InfectionCurveView.as_view("index"))
 wavid19.add_url_rule(
     '/icurve', view_func=InfectionCurveView.as_view("icurve"))
+wavid19.add_url_rule(
+    '/download_model', view_func=DownloadView.as_view("download_model"))
