@@ -43,7 +43,7 @@ from ..models import InfectionCurve
 # =============================================================================
 
 class FloatField(wtf.FloatField):
-    widget =  wtf.widgets.html5.NumberInput()
+    widget = wtf.widgets.html5.NumberInput()
 
 
 # =============================================================================

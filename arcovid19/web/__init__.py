@@ -39,6 +39,9 @@ from . import bp
 # =============================================================================
 
 def get_webapp(**kwargs):
+    """Retrieve a flask app for arcovid 19 using the internal blueprint.
+
+    """
     app = flask.Flask("arcovid19.web")
     app.register_blueprint(bp.wavid19)
 
