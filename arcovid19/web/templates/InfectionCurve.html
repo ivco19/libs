@@ -40,6 +40,10 @@
      background: #fff;
    }
 
+   #data-container {
+      overflow-y: auto;
+   }
+
 
 </style>
 {% endblock %}
@@ -48,7 +52,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col col-md-4">
-            <form method="POST" action="">
+            <form id="params" method="POST" action="">
                 {% if form.errors %}
                     {{ form.errors }}
                 {% endif %}
@@ -104,7 +108,9 @@
                     {% endif %}
                 {% endfor %}
                 <div class="tab-pane fade" id="data" role="tabpanel" aria-labelledby="data-tab">
-                    {{result.to_html()|safe}}
+                    <div id="data-container">
+                        {{result.to_html()|safe}}
+                    </div>
                 </div>
               </div>
               {% endif %}
@@ -128,6 +134,9 @@ $(document).ready(function(){
 
     $("table.dataframe th.sorting").addClass("text-info").append(
         '<span class="float-right"><i class="fas fa-sort"></i></span>');
+
+    var height = $("form#params").height() * .95;
+    $("#data-container").css("max-height", `${height}px`);
 
 });
 </script>
