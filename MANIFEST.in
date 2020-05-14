@@ -1,0 +1,2 @@
+recursive-include arcovid19/web/templates/ *.html
+recursive-include arcovid19/web/static/ *
