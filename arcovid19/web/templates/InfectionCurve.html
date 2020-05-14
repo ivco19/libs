@@ -53,14 +53,15 @@
     <div class="row">
         <div class="col col-md-4">
             <form id="params" method="POST" action="">
+                {{ form.hidden_tag() }}
                 {% if form.errors %}
                     <p class="text-danger">Something gone wrong!</p>
                 {% endif %}
                 <table class="table table-borderless table-sm">
-                    {% for field in form %}
+                    {% for field in form if field.widget.input_type != 'hidden'%}
                     <tr class="{% if field.errors %} text-danger {% endif %}">
                         <th>{{ field.label() }}</th>
-                        <td>{{ field() }} </td>
+                        <td>{{ field() }}</td>
                         <td>
                             <a class="text-info" tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="{{field.label.text}}" data-placement="right" data-content="{{ field.description }}">
                                 <i class="far fa-question-circle"></i></td>

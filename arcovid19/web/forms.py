@@ -69,11 +69,8 @@ DEFAULT_RENDER_KW = {"class": "form-control form-control-sm"}
 
 def make_InfectionCurveForm():
 
-    # form metaclass
-    Meta = type("Meta", (object,), {"csrf": False})
-
     # here gone all the fields
-    form_fields = {"Meta": Meta}
+    form_fields = {}
 
     # this gonna store all the model choices
     models, methods = [], []

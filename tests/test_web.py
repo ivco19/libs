@@ -61,6 +61,8 @@ def webclient():
     app = arcovid19.web.create_app()
     db_fd, app.config['DATABASE'] = tempfile.mkstemp()
     app.config['TESTING'] = True
+    app.config['WTF_CSRF_ENABLED'] = False
+    app.config['WTF_CSRF_METHODS'] = []  # This is the magic
 
     with app.test_client() as client:
         yield client

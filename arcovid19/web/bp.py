@@ -102,8 +102,12 @@ class InfectionCurveView(TemplateView):
         form = forms.InfectionCurveForm()
 
         if flask.request.method == "POST" and form.validate_on_submit():
+
             # get all the data as string
             data = form.data.copy()
+
+            # remove crftokern
+            data.pop("csrf_token", None)
 
             # extract the model method name and the method from the class
             method_name = data.pop("model")
@@ -154,7 +158,10 @@ class DownloadView(InfectionCurveView):
         result.to_excel(writer, sheet_name="Data")
 
         # retrieve th config
-        config = pd.DataFrame([context_data["form"].data]).T
+        config_data = context_data["form"].data.copy()
+        config_data.pop("csrf_token", None)
+
+        config = pd.DataFrame([config_data]).T
         config.index.name = "Attribute"
         config.columns = ["Value"]
         config.to_excel(writer, sheet_name="Config")
