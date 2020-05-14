@@ -33,6 +33,8 @@ import jinja2
 
 import matplotlib.pyplot as plt
 
+import mpld3
+
 import flask
 from flask.views import View
 
@@ -74,7 +76,7 @@ class InfectionCurveView(TemplateView):
     def subplots(self):
         return plt.subplots(frameon=False, figsize=(12, 8))
 
-    def get_img(self, fig):
+    def _get_img(self, fig):
         buf = io.StringIO()
 
         fig.tight_layout()
@@ -83,6 +85,10 @@ class InfectionCurveView(TemplateView):
         buf.close()
 
         return jinja2.Markup(svg)
+
+    def get_img(self, fig):
+        html = mpld3.fig_to_html(fig)
+        return jinja2.Markup(html)
 
     def make_plots(self, result):
         fig_linear, ax_linear = self.subplots()

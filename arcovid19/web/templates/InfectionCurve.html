@@ -29,22 +29,9 @@
         width: 100%;
     }
 
-    svg {
-     display: block;
-     border: none;
-     position: absolute;
-     top: 5%;
-     left: 5%;
-     width: 90%;
-     height: 90%;
-     background: #fff;
-   }
-
    #data-container {
       overflow-y: auto;
    }
-
-
 </style>
 {% endblock %}
 
@@ -114,7 +101,7 @@
                     <div id="data-container">
                         <form action="{{ url_for('arcovid19.download_model') }}" class="float-right" method="post">
                             <div class="hide">
-                                {% for field in form %}{{ field() }}{% endfor %}
+                                {% for field in form %}{{ field(id="download_" + field.id) }} }}{% endfor %}
                             </div>
                             <button type="submit" class="btn btn-sm btn-success">
                                 Download <i class="fas fa-download"></i>

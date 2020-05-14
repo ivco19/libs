@@ -42,7 +42,7 @@ PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 REQUIREMENTS = [
     "numpy", "pandas", "clize", "diskcache",
     "xlrd", "attrs", "deprecated",
-    "flask", "Flask-WTF", "numpydoc", "openpyxl",
+    "flask", "Flask-WTF", "numpydoc", "openpyxl", "mpld3",
     "matplotlib", "seaborn"]
 
 
