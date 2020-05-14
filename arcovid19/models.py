@@ -447,7 +447,7 @@ class InfectionCurve:
     intervention_end: int = attr.ib(default=25)
     intervention_decrease: float = attr.ib(default=70)
     t_incubation: float = attr.ib(default=5.)
-    t_infectious = attr.ib(default=9.)
+    t_infectious: float = attr.ib(default=9.)
     t_death: float = attr.ib(default=32.)
     mild_recovery: float = attr.ib(default=11.)
     bed_stay: float = attr.ib(default=28.)

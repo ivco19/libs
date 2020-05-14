@@ -100,7 +100,8 @@ class InfectionCurveView(TemplateView):
         context_data = {}
 
         form = forms.InfectionCurveForm()
-        if form.validate_on_submit():
+
+        if flask.request.method == "POST" and form.validate_on_submit():
             # get all the data as string
             data = form.data.copy()
 
@@ -139,6 +140,7 @@ class DownloadView(InfectionCurveView):
 
     def dispatch_request(self):
         context_data = self.get_context_data()
+
         result = context_data["result"]
 
         now = dt.datetime.now().isoformat()

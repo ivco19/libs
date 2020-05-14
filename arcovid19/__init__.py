@@ -29,4 +29,4 @@ __version__ = "0.5"
 from .cache import CACHE, from_cache  # noqa
 from .cases import load_cases  # noqa
 from .models import load_infection_curve  # noqa
-from .web import  get_webapp  # noqa
+from . import web # noqa

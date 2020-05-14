@@ -38,7 +38,7 @@ from . import bp
 # PUBLIC API
 # =============================================================================
 
-def get_webapp(**kwargs):
+def create_app(**kwargs):
     """Retrieve a flask app for arcovid 19 using the internal blueprint.
 
     """

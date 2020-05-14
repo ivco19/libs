@@ -29,7 +29,7 @@ __all__ = ["main"]
 import sys
 
 from .cases import load_cases, CASES_URL
-from .web import get_webapp
+from . import web
 
 
 # =============================================================================
@@ -98,7 +98,7 @@ def webserver(
         directory to the directory containing the first file found.
 
     """
-    app = get_webapp()
+    app = web.create_app()
     app.run(
         host=host, port=port,
         use_reloader=True,
