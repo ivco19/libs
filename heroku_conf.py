@@ -31,4 +31,5 @@ import arcovid19
 # =============================================================================
 
 
-app = arcovid19.create_app()
+app = arcovid19.web.create_app()
+app.run()

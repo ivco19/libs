@@ -1,2 +1,1 @@
-release: python configure.py
-web: gunicorn epyrba:app
+web: gunicorn heroku_conf:app
