@@ -40,6 +40,10 @@ from flask.views import View
 
 import pandas as pd
 
+from .. import (
+    __doc__ as ARCOVID19_RESUME,
+    __version__ as ARCOVID19_VERSION)
+
 from ..models import load_infection_curve, InfectionCurve
 from . import forms
 
@@ -188,6 +192,14 @@ class DownloadView(InfectionCurveView):
 # =============================================================================
 
 wavid19 = flask.Blueprint("arcovid19", "arcovid19.web.bp")
+
+
+@wavid19.context_processor
+def inject_arcovid19():
+    return {
+        "ARCOVID19_RESUME": ARCOVID19_RESUME,
+        "ARCOVID19_VERSION": ARCOVID19_VERSION}
+
 
 wavid19.add_url_rule(
     '/', view_func=InfectionCurveView.as_view("index"))

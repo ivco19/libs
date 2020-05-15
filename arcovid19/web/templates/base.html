@@ -70,8 +70,9 @@ License: BSD-3-Clause
     <nav class="navbar navbar-icon-top navbar-expand-md bg-dark navbar-dark">
 
         <!-- Brand -->
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="{{ url_for('arcovid19.index') }}">
             <strong class="text-success">AR</strong>covid19
+            <small>v.{{ARCOVID19_VERSION}}</small>
         </a>
 
         <!-- Toggler/collapsibe Button -->
@@ -86,6 +87,12 @@ License: BSD-3-Clause
                     <a class="nav-link active" href="{{ url_for('arcovid19.icurve') }}">
                         <i class="fa fa-chart-line"></i>
                         IC Models
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" target="_new" href="https://arcovid19.readthedocs.io/">
+                        <i class="fa fa-life-ring"></i>
+                        Help
                     </a>
                 </li>
             </ul>
@@ -114,10 +121,14 @@ License: BSD-3-Clause
 <div class="container-fluid footer p-0">
     <footer>
         <div class="footer-copyright text-center py-3">
-            © 2020 Copyright:
-            <a target="_new" href="https://ivco19.github.io/"> Arcovid19</a>
-            <br>
-            <a href="https://arcovid19.readthedocs.io/" target="_new">More info</a>
+
+                © 2020 Copyright:
+                <a target="_new" href="https://ivco19.github.io/"> Arcovid19</a>
+                <br>
+                {{ ARCOVID19_RESUME }}
+                <br>
+                <a href="https://arcovid19.readthedocs.io/" target="_new">More info</a>
+
         </div>
     </footer>
 </div>
