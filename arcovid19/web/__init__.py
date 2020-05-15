@@ -33,6 +33,16 @@ import flask
 
 from . import bp
 
+# =============================================================================
+# CONSTANTS
+# =============================================================================
+
+DEBUG = os.environ.get("ARCOVID19_DEBUG", "true").lower() == "true"
+
+TESTING = DEBUG
+
+SECRET_KEY = os.environ.get("ARCOVID19_SECRET_KEY")
+
 
 # =============================================================================
 # PUBLIC API
@@ -42,14 +52,13 @@ def create_app(**kwargs):
     """Retrieve a flask app for arcovid 19 using the internal blueprint.
 
     """
+    kwargs.setdefault("DEBUG", DEBUG)
+    kwargs.setdefault("TESTING", TESTING)
+    kwargs.setdefault("SECRET_KEY", SECRET_KEY or os.urandom(16))
+
     app = flask.Flask("arcovid19.web")
     app.register_blueprint(bp.wavid19)
 
-    app.config.update(
-        DEBUG=True,
-        TESTING=False,
-        SECRET_KEY=os.urandom(16))
-
-    app.config.from_envvar('ARCOVID19_WEB_SETTINGS', silent=True)
+    app.config.update(kwargs)
 
     return app
