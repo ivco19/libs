@@ -1,2 +1,6 @@
+include *.md
+include LICENSE
+include README.rst
+
 recursive-include arcovid19/web/templates/ *.html
 recursive-include arcovid19/web/static/ *
