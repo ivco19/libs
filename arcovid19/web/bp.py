@@ -38,6 +38,8 @@ import mpld3
 import flask
 from flask.views import View
 
+from flask_babel import lazy_gettext as _
+
 import pandas as pd
 
 from .. import (
@@ -102,8 +104,8 @@ class InfectionCurveView(TemplateView):
         result.plot(ax=ax_log, log=True)
 
         return {
-            "Linear": self.get_img(fig_linear),
-            "Log": self.get_img(fig_log)
+            _("Linear"): self.get_img(fig_linear),
+            _("Log"): self.get_img(fig_log)
         }
 
     def get_context_data(self):

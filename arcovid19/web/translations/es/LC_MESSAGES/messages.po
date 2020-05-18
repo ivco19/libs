@@ -1,0 +1,228 @@
+# Spanish translations for arcovid19.
+# Copyright (C) 2020 ORGANIZATION
+# This file is distributed under the same license as the arcovid19 project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: arcovid19 VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-05-17 23:01-0300\n"
+"PO-Revision-Date: 2020-05-17 19:10-0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: arcovid19/web/bp.py:107
+msgid "Linear"
+msgstr "Lineal"
+
+#: arcovid19/web/bp.py:108
+msgid "Log"
+msgstr "Log"
+
+#: arcovid19/web/forms.py:87 arcovid19/web/translations/_dyn.py:5
+msgid "Model"
+msgstr "Modelo"
+
+#: arcovid19/web/forms.py:89 arcovid19/web/translations/_dyn.py:6
+msgid "Compartimental model"
+msgstr "Modelo compartimental"
+
+#: arcovid19/web/templates/InfectionCurve.html:8
+msgid "Reset"
+msgstr "Reiniciar"
+
+#: arcovid19/web/templates/InfectionCurve.html:45
+msgid "Something gone wrong!"
+msgstr "Algo funciono mal!"
+
+#: arcovid19/web/templates/InfectionCurve.html:68
+msgid "Run"
+msgstr "Ejecutar"
+
+#: arcovid19/web/templates/InfectionCurve.html:86
+msgid "Data"
+msgstr "Datos"
+
+#: arcovid19/web/templates/InfectionCurve.html:108
+msgid "Download"
+msgstr "Descargar"
+
+#: arcovid19/web/templates/base.html:89
+msgid "IC Models"
+msgstr "Modelos"
+
+#: arcovid19/web/templates/base.html:95
+msgid "Help"
+msgstr "Ayuda"
+
+#: arcovid19/web/templates/base.html:131
+msgid "More info"
+msgstr "Mas información"
+
+#: arcovid19/web/translations/_dyn.py:2
+msgid "SIR"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:3
+msgid "SEIR"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:4
+msgid "SEIRF"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:7
+msgid "T Max"
+msgstr "Tiempo Máximo"
+
+#: arcovid19/web/translations/_dyn.py:8
+msgid "Time range [days]."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:9
+msgid "Dt"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:10
+msgid "Time step [days]."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:11
+msgid "Population"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:12
+msgid "Population."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:13
+msgid "N Init"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:14
+msgid "Number of initial infections."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:15
+msgid "R"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:16
+msgid "Reproduction number."
+msgstr "Número reproductivo"
+
+#: arcovid19/web/translations/_dyn.py:17
+msgid "Intervention Start"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:18
+msgid "Start intervention days."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:19
+msgid "Intervention End"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:20
+msgid "End intervention days."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:21
+msgid "Intervention Decrease"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:22
+msgid ""
+"Decrease in transmission for intervention, percentage (0-100) 100 means "
+"total isolation."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:23
+msgid "T Incubation"
+msgstr "T. de incubación"
+
+#: arcovid19/web/translations/_dyn.py:24
+msgid "Length of incubation period."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:25
+msgid "T Infectious"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:26
+msgid "None"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:27
+msgid "T Death"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:28
+msgid "Time from end of incubation to death."
+msgstr "Tiempo desde el final de la incubación hasta la muerte"
+
+#: arcovid19/web/translations/_dyn.py:29
+msgid "Mild Recovery"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:30
+msgid ""
+"Recovery time for mild (not severnot severe) cases, days hospitalization "
+"rate (fraction)."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:31
+msgid "Bed Stay"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:32
+msgid "Length of hospital stay, days."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:33
+msgid "Bed Rate"
+msgstr "Ritmo de hospitalización (Bed Rate)"
+
+#: arcovid19/web/translations/_dyn.py:34
+msgid "Hospitalization rate (fraction)."
+msgstr "Ritmo de hospitalización (facción)"
+
+#: arcovid19/web/translations/_dyn.py:35
+msgid "Bed Wait"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:36
+msgid "Time from first synthoms to hospitalization (days)."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:37
+msgid "Beta"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:38
+msgid "SEIR Model beta ($eta$)."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:39
+msgid "Sigma"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:40
+msgid "SEIR Model sigma ($\\sigma$)."
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:41
+msgid "Gamma"
+msgstr ""
+
+#: arcovid19/web/translations/_dyn.py:42
+msgid "SEIR Model gamma ($\\gamma$)."
+msgstr ""
+

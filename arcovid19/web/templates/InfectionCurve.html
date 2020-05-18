@@ -5,7 +5,7 @@
 
 <span class="float-right">
     <a type="submit" class="btn btn-sm btn-warning" href="{{ url_for('arcovid19.icurve') }}">
-        Reset <i class="fas fa-sync"></i>
+        {% trans %}Reset{% endtrans %} <i class="fas fa-sync"></i>
     </a>
 </span>
 
@@ -42,12 +42,13 @@
             <form id="params" method="POST" action="">
                 {{ form.hidden_tag() }}
                 {% if form.errors %}
-                    <p class="text-danger">Something gone wrong!</p>
+                    <p class="text-danger">{% trans %}Something gone wrong!{%endtrans%}</p>
                 {% endif %}
                 <table class="table table-borderless table-sm">
                     {% for field in form if field.widget.input_type != 'hidden'%}
                     <tr class="{% if field.errors %} text-danger {% endif %}">
-                        <th>{{ field.label() }}</th>
+                        <th>
+                            {{ field.label() }}</th>
                         <td>{{ field() }}</td>
                         <td>
                             <a class="text-info" tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="{{field.label.text}}" data-placement="right" data-content="{{ field.description }}">
@@ -64,7 +65,7 @@
                 </table>
                 <div>
                     <button type="submit" class="btn btn-block btn-primary">
-                        Run <i class="fas fa-fast-forward"></i>
+                        {% trans %}Run{% endtrans %} <i class="fas fa-fast-forward"></i>
                     </button>
                 </div>
             </form>
@@ -82,7 +83,7 @@
                 </li>
                 {% endfor %}
                 <li class="nav-item">
-                    <a class="nav-link" id="data-tab" data-toggle="tab" href="#data" role="tab" aria-controls="data" aria-selected="false">Data</a>
+                    <a class="nav-link" id="data-tab" data-toggle="tab" href="#data" role="tab" aria-controls="data" aria-selected="false">{% trans %}Data{% endtrans %}</a>
                 </li>
               </ul>
               <div class="tab-content" id="myTabContent">
@@ -104,7 +105,7 @@
                                 {% for field in form %}{{ field(id="download_" + field.id) }} }}{% endfor %}
                             </div>
                             <button type="submit" class="btn btn-sm btn-success">
-                                Download <i class="fas fa-download"></i>
+                                {% trans %}Download{% endtrans %} <i class="fas fa-download"></i>
                             </button>
                         </form>
                         {{result.to_html()|safe}}

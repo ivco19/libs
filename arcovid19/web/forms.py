@@ -31,6 +31,8 @@ import wtforms as wtf
 from wtforms.fields import html5
 import wtforms.validators as vldt
 
+from flask_babel import lazy_gettext as _
+
 import attr
 
 from numpydoc import docscrape
@@ -76,15 +78,15 @@ def make_InfectionCurveForm():
     models, methods = [], []
     for mname, method in vars(InfectionCurve).items():
         if mname.startswith("do_") and callable(method):
-            label = mname.split("_", 1)[-1]
+            label = _(mname.split("_", 1)[-1])
             models.append((mname, label))
             methods.append(method)
 
     # add the model select to the form
     form_fields["model"] = wtf.SelectField(
-        'Model',
+        _('Model'),
         choices=models,
-        description="Compartmental model.",
+        description=_("Compartimental model"),
         render_kw={"class": "custom-select custom-select-sm"},
         default=models[0][0])
 
@@ -124,8 +126,8 @@ def make_InfectionCurveForm():
 
             # create the field
             ffield = Field(
-                label,
-                description=description,
+                _(label),
+                description=_(description),
                 default=default,
                 validators=validators,
                 render_kw=render_kw)
@@ -157,8 +159,8 @@ def make_InfectionCurveForm():
 
         # create the field
         ffield = Field(
-            label,
-            description=description,
+            _(label),
+            description=_(description),
             default=afield.default,
             validators=validators,
             render_kw=render_kw)

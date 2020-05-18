@@ -86,13 +86,13 @@ License: BSD-3-Clause
                 <li class="nav-item">
                     <a class="nav-link active" href="{{ url_for('arcovid19.icurve') }}">
                         <i class="fa fa-chart-line"></i>
-                        IC Models
+                        {% trans %}IC Models{% endtrans %}
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" target="_new" href="https://arcovid19.readthedocs.io/">
                         <i class="fa fa-life-ring"></i>
-                        Help
+                        {% trans %}Help{% endtrans %}
                     </a>
                 </li>
             </ul>
@@ -127,7 +127,9 @@ License: BSD-3-Clause
                 <br>
                 {{ ARCOVID19_RESUME }}
                 <br>
-                <a href="https://arcovid19.readthedocs.io/" target="_new">More info</a>
+                <a href="https://arcovid19.readthedocs.io/" target="_new">
+                    {% trans %}More info{% endtrans %}
+                </a>
 
         </div>
     </footer>

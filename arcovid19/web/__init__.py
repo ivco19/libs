@@ -28,20 +28,29 @@ implementation of all the project with the blueprint
 # =============================================================================
 
 import os
+import pathlib
 
 import flask
+from flask_babel import Babel
 
 from . import bp
+
 
 # =============================================================================
 # CONSTANTS
 # =============================================================================
+
+PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 
 DEBUG = os.environ.get("ARCOVID19_DEBUG", "true").lower() == "true"
 
 TESTING = DEBUG
 
 SECRET_KEY = os.environ.get("ARCOVID19_SECRET_KEY")
+
+DEFAULT_LOCALE = os.environ.get("ARCOVID19_DEFAULT_LOCALE")
+
+TRANSLATION_DIRECTORY = str(PATH / "translations")
 
 
 # =============================================================================
@@ -56,9 +65,15 @@ def create_app(**kwargs):
     kwargs.setdefault("TESTING", TESTING)
     kwargs.setdefault("SECRET_KEY", SECRET_KEY or os.urandom(16))
 
+    kwargs.setdefault('BABEL_DEFAULT_LOCALE', DEFAULT_LOCALE)
+    kwargs.setdefault('BABEL_TRANSLATION_DIRECTORIES', TRANSLATION_DIRECTORY)
+
     app = flask.Flask("arcovid19.web")
     app.register_blueprint(bp.wavid19)
 
     app.config.update(kwargs)
 
+    babel = Babel(app)  # noqa
+
+    # ========== RETURN
     return app

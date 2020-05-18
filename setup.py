@@ -43,7 +43,7 @@ REQUIREMENTS = [
     "numpy", "pandas", "clize", "diskcache",
     "xlrd", "attrs", "deprecated",
     "flask", "Flask-WTF", "numpydoc", "openpyxl", "mpld3",
-    "matplotlib", "seaborn"]
+    "flask_babel", "matplotlib", "seaborn"]
 
 
 with open(PATH / "README.rst") as fp:
