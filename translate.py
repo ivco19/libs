@@ -52,7 +52,12 @@ DYNAMIC_I18N = TRANSLATIONS_DIR / "_dyn.py"
 LANGS = ["es"]
 
 
-atexit.register(os.remove, DYNAMIC_I18N)
+@atexit.register
+def _remove_dynamic():
+    try:
+        os.remove(DYNAMIC_I18N)
+    except Exception:
+        pass
 
 
 # =============================================================================
