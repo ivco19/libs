@@ -19,7 +19,7 @@ COVID-19 data from the Arcovid19 group.
 
 """
 
-__all__ = ["main"]
+__all__ = ["main", "cases", "webserver"]
 
 
 # =============================================================================

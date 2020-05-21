@@ -19,7 +19,10 @@ COVID-19 in Argentina.
 
 """
 
-__all__ = ["NodeNotFoundError"]
+__all__ = [
+    "NodeNotFoundError",
+    "Node", "Graph", "InfectionCurve",
+    "load_infection_curve"]
 
 
 # =============================================================================
@@ -124,17 +127,6 @@ class Graph:
     vert_dict: dict
         a dict containing the vertices
 
-
-    Methods
-    -------
-    add_node(node, value)
-    get_node()
-    get_node_value()
-    set_node()
-    get_node_ids()
-    get_nodes_to()
-    get_nodes_from()
-
     """
 
     vert_dict = attr.ib(factory=dict)
@@ -147,26 +139,26 @@ class Graph:
 
     # node functions --------------------------------------
     def add_node(self, nnode, value):
-        """
-        method: add_node
+        """Adds a new node to a graph.
 
-        Adds a node to a graph. The node must have a value.
-        """
+        The node must have a value.
 
+        """
         new_node = Node(nnode, value)
         self.vert_dict[nnode] = new_node
         return new_node
 
     def get_node(self, n):
-        """
-        method: get_node
+        """Retrieve a node if exists.
 
         Parameters
         ----------
            n: str
+
         Returns
         -------
            node: a node object
+
         """
         return self.vert_dict.get(n)
 
@@ -187,7 +179,7 @@ class Graph:
             return node.value
 
     def set_node(self, n, value):
-        """Updates the Node value
+        """Updates the Node value. The node must exists inside the graph.
 
         Parameters
         ----------
@@ -216,7 +208,7 @@ class Graph:
 
     # edge functions --------------------------------------
     def add_edge(self, frm, to, names=None, values=0):
-        """
+        """Link two nodes inside a graph.
 
         Notes
         -----
@@ -435,8 +427,8 @@ class InfectionCurve:
     References
     ----------
 
-    .. [1] “Stochastic SIR model with Python,” epirecipes. [Online].
-       Available: https://tinyurl.com/y8zwvfk4. [Accessed: 09-May-2020].
+    “Stochastic SIR model with Python,” epirecipes. [Online].
+     Available: https://tinyurl.com/y8zwvfk4. [Accessed: 09-May-2020].
 
     """
 
@@ -568,12 +560,6 @@ class InfectionCurve:
         -------
            value: Time series for S, E, I and R
 
-        References
-        ----------
-
-        .. [1] Intellectual Ventures Management, LLC (IVM) (Ed.). (n.d.).
-           SEIR and SEIRS models. Retrieved May 9, 2020,
-           from https://www.idmod.org/docs/hiv/model-seir.html
 
         """
         dt = float(dt)

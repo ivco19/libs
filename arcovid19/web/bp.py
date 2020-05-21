@@ -193,6 +193,7 @@ class DownloadView(InfectionCurveView):
 # Blueprint
 # =============================================================================
 
+#: Flask blueprint with the views implemented in arcovid19.
 wavid19 = flask.Blueprint("arcovid19", "arcovid19.web.bp")
 
 
