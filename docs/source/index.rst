@@ -100,7 +100,8 @@ Contents:
 
     install/install.rst
     install/cli.rst
-    tutorial/tutorial.rst
+    cases_tutorial/cases_tutorial.rst
+    web_tutorial/web_tutorial.rst
     api/modules.rst
 
 

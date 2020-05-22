@@ -1,1 +1,1 @@
-web: gunicorn heroku_conf:app
+web: gunicorn 'arcovid19.web:create_app()'
