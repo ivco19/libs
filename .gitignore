@@ -139,3 +139,4 @@ report/*.out
 report/*png
 report/report.tex
 report/report.pdf
+.vscode/
