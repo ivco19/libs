@@ -84,6 +84,35 @@ Deployment
 
 Para ejecutando arcovid19 webserver en un entorno de producción debe configurarse almenos 2 variables de entorno:
 
+- ``ARCOVID19_DEBUG=false``
+- ``ARCOVID19_SECRET_KEY=a-lot-of-random-chars``
+
+*ARCOVID19_SECRET_KEY* tiene que ser un string al azar contiguo de valores aleatorios,
+puede por ejemplo apretarse teclas sin ningun sentido.
+
+Si se desea configurar el idioma a español debe exportarse la variable de entorno
+
+- ``ARCOVID19_DEFAULT_LOCALE=es``
+
+El deployment puede realizarse con cualquier método disponible para
+`Flask <https://flask.palletsprojects.com/en/1.1.x/deploying/>`_, y la
+aplicacion wsgi esta disponible con la función ``arcovid19.web.create_app()``.
+
+Por ejemplo para lanzar la applicación con `Gunicorn <https://gunicorn.org/>`_
+puede hacerse con el comando
+
+.. code-block:: console
+
+    $ gunicorn 'arcovid19.web:create_app()'
+
+
+Ademas el repositorio ya se encuentra configurado con los archivos
+*requirements.txt* y *Procfile* para funcionar en `Heroku <http://heroku.com>`_.
+
+Una versión online de la webapp esta disponible en
+`aquí <https://arcovid19.herokuapp.com/>`_.
+
+
 
 
 
