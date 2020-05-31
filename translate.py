@@ -49,7 +49,7 @@ TRANSLATIONS_DIR = PATH / "arcovid19" / "web" / "translations"
 
 DYNAMIC_I18N = TRANSLATIONS_DIR / "_dyn.py"
 
-LANGS = ["es"]
+LANGS = ["es", "en"]
 
 
 @atexit.register
@@ -63,6 +63,7 @@ def _remove_dynamic():
 # =============================================================================
 # EXTENSION CLASS
 # =============================================================================
+
 
 @attr.s(frozen=True)
 class DynGetText:
@@ -79,6 +80,7 @@ class DynGetText:
 # =============================================================================
 # FUNCTIONS
 # =============================================================================
+
 
 def translate():
 
@@ -97,7 +99,8 @@ def translate():
         project="arcovid19",
         copyright_holder="arcovid19",
         output_file=TEMPLATE_POT,
-        input_dirs=".")
+        input_dirs=".",
+    )
 
     # create (if is needed) all the language files
     print(f"Create all the language files in '{TRANSLATIONS_DIR}'")
@@ -108,12 +111,11 @@ def translate():
             sh.pybabel.init(
                 input_file=TEMPLATE_POT,
                 output_dir=TRANSLATIONS_DIR,
-                locale=lang)
+                locale=lang,
+            )
 
     print("Update all the language files")
-    sh.pybabel.update(
-        input_file=TEMPLATE_POT,
-        output_dir=TRANSLATIONS_DIR)
+    sh.pybabel.update(input_file=TEMPLATE_POT, output_dir=TRANSLATIONS_DIR)
 
     print("Compiling")
     sh.pybabel.compile(directory=TRANSLATIONS_DIR)

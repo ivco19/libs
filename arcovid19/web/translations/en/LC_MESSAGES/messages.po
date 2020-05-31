@@ -1,5 +1,5 @@
-# Spanish translations for arcovid19.
-# Copyright (C) 2020 ORGANIZATION
+# English translations for arcovid19.
+# Copyright (C) 2020 arcovid19
 # This file is distributed under the same license as the arcovid19 project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: arcovid19 VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-05-31 00:32-0300\n"
-"PO-Revision-Date: 2020-05-17 19:10-0300\n"
+"PO-Revision-Date: 2020-05-31 00:32-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: es\n"
-"Language-Team: es <LL@li.org>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -20,11 +20,11 @@ msgstr ""
 
 #: arcovid19/web/bp.py:104
 msgid "Linear"
-msgstr "Lineal"
+msgstr ""
 
 #: arcovid19/web/bp.py:105
 msgid "Log"
-msgstr "Log"
+msgstr ""
 
 #: arcovid19/web/bp.py:238
 msgid "Growth"
@@ -44,11 +44,11 @@ msgstr ""
 
 #: arcovid19/web/forms.py:92 arcovid19/web/translations/_dyn.py:5
 msgid "Model"
-msgstr "Modelo"
+msgstr ""
 
 #: arcovid19/web/forms.py:94 arcovid19/web/translations/_dyn.py:6
 msgid "Compartimental model"
-msgstr "Modelo compartimental"
+msgstr ""
 
 #: arcovid19/web/forms.py:199 arcovid19/web/translations/_dyn.py:43
 msgid "Argentina"
@@ -85,12 +85,12 @@ msgstr ""
 #: arcovid19/web/templates/Cases.html:8
 #: arcovid19/web/templates/InfectionCurve.html:8
 msgid "Reset"
-msgstr "Reiniciar"
+msgstr ""
 
 #: arcovid19/web/templates/Cases.html:45
 #: arcovid19/web/templates/InfectionCurve.html:45
 msgid "Something gone wrong!"
-msgstr "Algo funciono mal!"
+msgstr ""
 
 #: arcovid19/web/templates/Cases.html:70
 msgid "Plot"
@@ -99,20 +99,20 @@ msgstr ""
 #: arcovid19/web/templates/Cases.html:91
 #: arcovid19/web/templates/InfectionCurve.html:86
 msgid "Data"
-msgstr "Datos"
+msgstr ""
 
 #: arcovid19/web/templates/Cases.html:112
 #: arcovid19/web/templates/InfectionCurve.html:108
 msgid "Download"
-msgstr "Descargar"
+msgstr ""
 
 #: arcovid19/web/templates/InfectionCurve.html:68
 msgid "Run"
-msgstr "Ejecutar"
+msgstr ""
 
 #: arcovid19/web/templates/base.html:89
 msgid "IC Models"
-msgstr "Modelos"
+msgstr ""
 
 #: arcovid19/web/templates/base.html:95
 msgid "Cases"
@@ -120,11 +120,11 @@ msgstr ""
 
 #: arcovid19/web/templates/base.html:101
 msgid "Help"
-msgstr "Ayuda"
+msgstr ""
 
 #: arcovid19/web/templates/base.html:137
 msgid "More info"
-msgstr "Mas información"
+msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:2
 msgid "SIR"
@@ -140,7 +140,7 @@ msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:7
 msgid "T Max"
-msgstr "Tiempo Máximo"
+msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:8
 msgid "Time range [days]."
@@ -176,7 +176,7 @@ msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:16
 msgid "Reproduction number."
-msgstr "Número reproductivo"
+msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:17
 msgid "Intervention Start"
@@ -206,7 +206,7 @@ msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:23
 msgid "T Incubation"
-msgstr "T. de incubación"
+msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:24
 msgid "Length of incubation period."
@@ -226,7 +226,7 @@ msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:28
 msgid "Time from end of incubation to death."
-msgstr "Tiempo desde el final de la incubación hasta la muerte"
+msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:29
 msgid "Mild Recovery"
@@ -248,11 +248,11 @@ msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:33
 msgid "Bed Rate"
-msgstr "Ritmo de hospitalización (Bed Rate)"
+msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:34
 msgid "Hospitalization rate (fraction)."
-msgstr "Ritmo de hospitalización (facción)"
+msgstr ""
 
 #: arcovid19/web/translations/_dyn.py:35
 msgid "Bed Wait"
@@ -301,7 +301,4 @@ msgstr ""
 #: arcovid19/web/translations/_dyn.py:52
 msgid "Muertos"
 msgstr ""
-
-#~ msgid "All"
-#~ msgstr ""
 

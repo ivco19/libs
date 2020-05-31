@@ -21,10 +21,12 @@ COVID-19 in Argentina.
 
 __all__ = [
     "CODE_TO_POVINCIA",
-    "D0", "Q1",
+    "D0",
+    "Q1",
     "CasesPlot",
     "CasesFrame",
-    "load_cases"]
+    "load_cases",
+]
 
 
 # =============================================================================
@@ -56,58 +58,61 @@ from . import cache, core
 CASES_URL = "https://github.com/ivco19/libs/raw/master/databases/cases.xlsx"
 
 
-AREAS_POP_URL = 'https://github.com/ivco19/libs/raw/master/databases/extra/arg_provs.dat'  # noqa
+AREAS_POP_URL = "https://github.com/ivco19/libs/raw/master/databases/extra/arg_provs.dat"  # noqa
 
 
 LABEL_DATE_FORMAT = "%d.%b"
 
 
 PROVINCIAS = {
-    'CABA': 'CABA',
-    'Bs As': 'BA',
-    'Córdoba': 'CBA',
-    'San Luis': 'SL',
-    'Chaco': 'CHA',
-    'Río Negro': 'RN',
-    'Santa Fe': 'SF',
-    'Tierra del F': 'TF',
-    'Jujuy': 'JY',
-    'Salta': 'SAL',
-    'Entre Ríos': 'ER',
-    'Corrientes': 'COR',
-    'Santiago Est': 'SDE',
-    'Neuquen': 'NQ',
-    'Mendoza': 'MDZ',
-    'Tucumán': 'TUC',
-    'Santa Cruz': 'SC',
-    'Chubut': 'CHU',
-    'Misiones': 'MIS',
-    'Formosa': 'FOR',
-    'Catamarca': 'CAT',
-    'La Rioja': 'LAR',
-    'San Juan': 'SJU',
-    'La Pampa': 'LPA'}
+    "CABA": "CABA",
+    "Bs As": "BA",
+    "Córdoba": "CBA",
+    "San Luis": "SL",
+    "Chaco": "CHA",
+    "Río Negro": "RN",
+    "Santa Fe": "SF",
+    "Tierra del F": "TF",
+    "Jujuy": "JY",
+    "Salta": "SAL",
+    "Entre Ríos": "ER",
+    "Corrientes": "COR",
+    "Santiago Est": "SDE",
+    "Neuquen": "NQ",
+    "Mendoza": "MDZ",
+    "Tucumán": "TUC",
+    "Santa Cruz": "SC",
+    "Chubut": "CHU",
+    "Misiones": "MIS",
+    "Formosa": "FOR",
+    "Catamarca": "CAT",
+    "La Rioja": "LAR",
+    "San Juan": "SJU",
+    "La Pampa": "LPA",
+}
 
 
 # this alias fixes the original typos
 PROVINCIAS_ALIAS = {
-    'Tierra del Fuego': "TF",
-    'Neuquén': "NQ",
-    "Santiago del Estero": "SDE"
+    "Tierra del Fuego": "TF",
+    "Neuquén": "NQ",
+    "Santiago del Estero": "SDE",
 }
 
 #: List of Argentina provinces
 CODE_TO_POVINCIA = {
-    v: k for k, v in it.chain(PROVINCIAS.items(), PROVINCIAS_ALIAS.items())}
+    v: k for k, v in it.chain(PROVINCIAS.items(), PROVINCIAS_ALIAS.items())
+}
 
 
 STATUS = {
-    'Recuperado': 'R',
-    'Recuperados': 'R',
-    'Confirmados': 'C',
-    'Confirmado': 'C',
-    'Activos': 'A',
-    'Muertos': 'D'}
+    "Recuperados": "R",
+    "Recuperado": "R",
+    "Confirmados": "C",
+    "Confirmado": "C",
+    "Activos": "A",
+    "Muertos": "D",
+}
 
 
 #: Pandemia Start 2020-03-11
@@ -125,9 +130,10 @@ logger = logging.getLogger("arcovid19.cases")
 # FUNCTIONS_
 # =============================================================================
 
+
 def safe_log(array):
     """Convert all -inf to 0"""
-    with np.errstate(divide='ignore'):
+    with np.errstate(divide="ignore"):
         res = np.log(array.astype(float))
     res[np.isneginf(res)] = 0
     return res
@@ -137,27 +143,36 @@ def safe_log(array):
 # CASES
 # =============================================================================
 
+
 class CasesPlot(core.Plotter):
 
     default_plot_name_method = "curva_epi_pais"
 
     def _plot_df(
-        self, *, odf, prov_name, prov_code,
-        confirmed, active, recovered, deceased, norm=1.
+        self,
+        *,
+        odf,
+        prov_name,
+        prov_code,
+        confirmed,
+        active,
+        recovered,
+        deceased,
+        norm=1.0,
     ):
 
         columns = {}
         if confirmed:
-            cseries = odf.loc[(prov_code, 'C')][self.frame.dates].values
+            cseries = odf.loc[(prov_code, "C")][self.frame.dates].values
             columns[f"{prov_name} Confirmed"] = cseries / norm
         if active:
-            cseries = odf.loc[(prov_code, 'A')][self.frame.dates].values
+            cseries = odf.loc[(prov_code, "A")][self.frame.dates].values
             columns[f"{prov_name} Active"] = cseries / norm
         if recovered:
-            cseries = odf.loc[(prov_code, 'R')][self.frame.dates].values
+            cseries = odf.loc[(prov_code, "R")][self.frame.dates].values
             columns[f"{prov_name} Recovered"] = cseries / norm
         if deceased:
-            cseries = odf.loc[(prov_code, 'D')][self.frame.dates].values
+            cseries = odf.loc[(prov_code, "D")][self.frame.dates].values
             columns[f"{prov_name} Deceased"] = cseries / norm
         pdf = pd.DataFrame(columns)
         return pdf
@@ -166,15 +181,20 @@ class CasesPlot(core.Plotter):
     def grate_full_period_all(self, *args, **kwargs):
         return self.curva_epi_pais(*args, **kwargs)
 
-    @deprecated(version="0.5", reason="use curve_epi_province instead")
+    @deprecated(version="0.5", reason="use growth_provincia instead")
     def grate_full_period(self, *args, **kwargs):
         return self.curva_epi_provincia(*args, **kwargs)
 
     def curva_epi_pais(
-        self, ax=None, argentina=True,
-        exclude=None, log=False, norm=False,
-        paint=None, count_days=None,
-        **kwargs
+        self,
+        ax=None,
+        argentina=True,
+        exclude=None,
+        log=False,
+        norm=False,
+        paint=None,
+        count_days=None,
+        **kwargs,
     ):
         """
         method: full_period_normalized()
@@ -206,16 +226,16 @@ class CasesPlot(core.Plotter):
         exclude = [] if exclude is None else exclude
         exclude = [self.frame.get_provincia_name_code(e)[1] for e in exclude]
 
-        ccolors = ['steelblue'] * 10 + ['peru'] * 10 + ['darkmagenta'] * 10
-        cmarkers = ['o', '.', 'o', 'x', 'D']
-        cstyles = ['-', '-', '--', '--', ':']
+        ccolors = ["steelblue"] * 10 + ["peru"] * 10 + ["darkmagenta"] * 10
+        cmarkers = ["o", ".", "o", "x", "D"]
+        cstyles = ["-", "-", "--", "--", ":"]
         cwidths = [2, 1, 1, 1, 2]
         cwidths = [3] * 2 + [1] * 7
 
         cfaces = ccolors[:]
         for i, _ in enumerate(cfaces):
             if i % 5 == 0 or i % 5 == 4:
-                cfaces[i] = 'white'
+                cfaces[i] = "white"
 
         calpha = [1.0] * 5 + [1.0] * 5 + [1.0] * 5
         cmrkevry = [(2, 3), (3, 2), (1, 5)]
@@ -234,32 +254,35 @@ class CasesPlot(core.Plotter):
             if code in exclude:
                 continue
 
-            aesthetics['color'] = next(icolors)
-            aesthetics['linewidth'] = next(iwidths)
-            aesthetics['linestyle'] = next(istyles)
-            aesthetics['marker'] = next(imarkers)
-            aesthetics['markerfacecolor'] = next(ifaces)
-            aesthetics['markeredgewidth'] = 1
-            aesthetics['markersize'] = 6
-            aesthetics['markevery'] = next(imrkevry)
-            aesthetics['alpha'] = next(ialpha)
+            aesthetics["color"] = next(icolors)
+            aesthetics["linewidth"] = next(iwidths)
+            aesthetics["linestyle"] = next(istyles)
+            aesthetics["marker"] = next(imarkers)
+            aesthetics["markerfacecolor"] = next(ifaces)
+            aesthetics["markeredgewidth"] = 1
+            aesthetics["markersize"] = 6
+            aesthetics["markevery"] = next(imrkevry)
+            aesthetics["alpha"] = next(ialpha)
 
-            mfc = aesthetics['markerfacecolor']
-            mew = aesthetics['markeredgewidth']
+            mfc = aesthetics["markerfacecolor"]
+            mew = aesthetics["markeredgewidth"]
 
             self.curva_epi_provincia(
-                provincia=code, ax=ax,
-                log=log, norm=norm,
-                color=aesthetics['color'],
-                linewidth=aesthetics['linewidth'],
-                linestyle=aesthetics['linestyle'],
-                marker=aesthetics['marker'],
+                provincia=code,
+                ax=ax,
+                log=log,
+                norm=norm,
+                color=aesthetics["color"],
+                linewidth=aesthetics["linewidth"],
+                linestyle=aesthetics["linestyle"],
+                marker=aesthetics["marker"],
                 markerfacecolor=mfc,
                 markeredgewidth=mew,
-                markersize=aesthetics['markersize'],
-                markevery=aesthetics['markevery'],
-                alpha=aesthetics['alpha'],
-                **kwargs)
+                markersize=aesthetics["markersize"],
+                markevery=aesthetics["markevery"],
+                alpha=aesthetics["alpha"],
+                **kwargs,
+            )
 
         labels = [d.date() for d in self.frame.dates]
         ispace = int(len(labels) / 10)
@@ -272,34 +295,46 @@ class CasesPlot(core.Plotter):
         ax.set_xticklabels(labels=slabels, rotation=0, fontsize=16)
         ax.set_title(
             "COVID-19 crecimiento en Argentina, por provincia, entre "
-            f"{lmin} and {lmax}", fontsize=16)
+            f"{lmin} and {lmax}",
+            fontsize=16,
+        )
         ax.set_xlabel("Date", fontsize=16)
         ylabel = "Numero de casos acumulado"
         if norm:
             ax.set_ylabel(ylabel + " y normalizado", fontsize=16)
         else:
             ax.set_ylabel(ylabel, fontsize=16)
-        ax.tick_params(axis='x', direction='in', length=8)
+        ax.tick_params(axis="x", direction="in", length=8)
         if log:
-            ax.set(yscale='log')
+            ax.set(yscale="log")
 
         # agregar eje x secundario
-        if count_days == 'pandemia':
+        if count_days == "pandemia":
 
             t = np.array([(dd - D0).days for dd in self.frame.dates])
 
             ax2 = ax.twiny()
             ax2.set_xlim(min(t), max(t))
-            ax2.set_xlabel("dias desde la declaracion de la pandemia (11/3)",
-                           fontsize=16, color='blue')
+            ax2.set_xlabel(
+                "dias desde la declaracion de la pandemia (11/3)",
+                fontsize=16,
+                color="blue",
+            )
 
-            ax2.tick_params(axis='x', direction='in', length=10, pad=-28,
-                            color='blue', labelcolor='blue', labelsize=16)
+            ax2.tick_params(
+                axis="x",
+                direction="in",
+                length=10,
+                pad=-28,
+                color="blue",
+                labelcolor="blue",
+                labelsize=16,
+            )
 
-        if count_days == 'cuarentena':
+        if count_days == "cuarentena":
 
             t = []
-            d0 = dt.datetime.strptime("3/20/20", '%m/%d/%y')  # cuarentena
+            d0 = dt.datetime.strptime("3/20/20", "%m/%d/%y")  # cuarentena
             for dd in self.frame.dates:
                 elapsed_days = (dd - d0).days
                 t.append(elapsed_days)
@@ -307,100 +342,102 @@ class CasesPlot(core.Plotter):
 
             ax2 = ax.twiny()
             ax2.set_xlim(min(t), max(t))
-            ax2.set_xlabel("dias desde la cuarentena (20/3)",
-                           fontsize=16, color='blue')
+            ax2.set_xlabel(
+                "dias desde la cuarentena (20/3)", fontsize=16, color="blue"
+            )
 
-            ax2.tick_params(axis='x', direction='in', length=10, pad=-28,
-                            color='blue', labelcolor='blue', labelsize=16)
+            ax2.tick_params(
+                axis="x",
+                direction="in",
+                length=10,
+                pad=-28,
+                color="blue",
+                labelcolor="blue",
+                labelsize=16,
+            )
 
         # pintar periodo de tiempo
-        if (count_days == 'pandemia') or (count_days == 'cuarentena'):
-            if paint == 'pandemia':
-                q1 = dt.datetime.strptime("3/11/20", '%m/%d/%y')  # pandemia
+        if (count_days == "pandemia") or (count_days == "cuarentena"):
+            if paint == "pandemia":
+                q1 = dt.datetime.strptime("3/11/20", "%m/%d/%y")  # pandemia
                 d_ini = (q1 - d0).days
                 d_fin = ax2.get_xlim()[1]
-                ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
+                ax2.axvspan(d_ini, d_fin, alpha=0.1, color="yellow")
 
-            if paint == 'cuarentena':
-                q1 = dt.datetime.strptime("3/20/20", '%m/%d/%y')  # cuarentena
+            if paint == "cuarentena":
+                q1 = dt.datetime.strptime("3/20/20", "%m/%d/%y")  # cuarentena
                 d_ini = (q1 - d0).days
                 d_fin = ax2.get_xlim()[1]
-                ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
+                ax2.axvspan(d_ini, d_fin, alpha=0.1, color="yellow")
         else:
             t = []
-            d0 = dt.datetime.strptime("1/01/20", '%m/%d/%y')  # any day
+            d0 = dt.datetime.strptime("1/01/20", "%m/%d/%y")  # any day
             for dd in self.frame.dates:
                 elapsed_days = (dd - d0).days
                 t.append(elapsed_days)
             t = np.array(t)
             ax2 = ax.twiny()
             ax2.set_xlim(min(t), max(t))
-            ax2.axis('off')
+            ax2.axis("off")
 
-            if paint == 'pandemia':
-                q1 = dt.datetime.strptime("3/11/20", '%m/%d/%y')  # pandemia
+            if paint == "pandemia":
+                q1 = dt.datetime.strptime("3/11/20", "%m/%d/%y")  # pandemia
                 d_ini = (q1 - d0).days
                 d_fin = ax2.get_xlim()[1]
-                ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
+                ax2.axvspan(d_ini, d_fin, alpha=0.1, color="yellow")
 
-            if paint == 'cuarentena':
-                q1 = dt.datetime.strptime("3/20/20", '%m/%d/%y')  # cuarentena
+            if paint == "cuarentena":
+                q1 = dt.datetime.strptime("3/20/20", "%m/%d/%y")  # cuarentena
                 d_ini = (q1 - d0).days
                 d_fin = ax2.get_xlim()[1]
-                ax2.axvspan(d_ini, d_fin, alpha=0.1, color='yellow')
+                ax2.axvspan(d_ini, d_fin, alpha=0.1, color="yellow")
 
         return ax
 
-    def curva_epi_provincia(
-        self,
-        provincia=None, confirmed=True,
-        active=True, recovered=True, deceased=True,
-        ax=None,
-        log=False, norm=False,
-        color=None, alpha=None,
-        linewidth=None, linestyle=None,
-        marker=None, markerfacecolor=None,
-        markeredgewidth=None,
-        markersize=None, markevery=None,
-        **kwargs
-    ):
+    @deprecated(version="0.6", reason="use growth_provincia instead")
+    def curva_epi_provincia(self, *args, **kwargs):
+        return self.growth_provincia(*args, **kwargs)
 
+    def growth_provincia(
+        self,
+        provincia=None,
+        confirmed=True,
+        active=True,
+        recovered=True,
+        deceased=True,
+        ax=None,
+        log=False,
+        norm=False,
+        **kwargs,
+    ):
         if provincia is None:
             prov_name, prov_c = "Argentina", "ARG"
         else:
             prov_name, prov_c = self.frame.get_provincia_name_code(provincia)
 
         # normalizacion a la poblacion de cada provincia
-        norm_factor = 1.
+        norm_factor = 1.0
         if norm:
-            areapop = self.ctats.areapop
-            population = areapop['pop'][areapop['key'] == prov_c].values[0]
-            norm_factor = population / 1.e6
+            areapop = self.frame.areapop
+            population = areapop["pop"][areapop["key"] == prov_c].values[0]
+            norm_factor = population / 1.0e6
 
         ax = plt.gca() if ax is None else ax
 
         # preparar dataframe
         pdf = self._plot_df(
-            odf=self.frame.df, prov_name=prov_name, prov_code=prov_c,
-            confirmed=confirmed, active=active,
-            recovered=recovered, deceased=deceased, norm=norm_factor)
-
-        # atributos graficos
-        aesthetics = {}
-        aesthetics['color'] = None if color is None else color
-        aesthetics['linewidth'] = None if linewidth is None else linewidth
-        aesthetics['linestyle'] = None if linestyle is None else linestyle
-        aesthetics['marker'] = None if marker is None else marker
-        mfc = markerfacecolor
-        aesthetics['markerfacecolor'] = None if mfc is None else mfc
-        mew = markeredgewidth
-        aesthetics['markeredgewidth'] = None if mew is None else mew
-        aesthetics['markersize'] = None if markersize is None else markersize
-        aesthetics['markevery'] = None if markevery is None else markevery
-        aesthetics['alpha'] = None if alpha is None else alpha
+            odf=self.frame.df,
+            prov_name=prov_name,
+            prov_code=prov_c,
+            confirmed=confirmed,
+            active=active,
+            recovered=recovered,
+            deceased=deceased,
+            norm=norm_factor,
+        )
 
         # hacer el grafico
-        pdf.plot.line(ax=ax, **kwargs, **aesthetics)
+        pdf.plot.line(ax=ax, **kwargs)
 
         # elementos formales del grafico
         labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.frame.dates]
@@ -414,21 +451,24 @@ class CasesPlot(core.Plotter):
         ax.set_xticklabels(labels=slabels, rotation=0, fontsize=16)
         ax.set_title(
             "COVID-19 crecimiento en Argentina, por provincia, entre "
-            f"{lmin} and {lmax}", fontsize=16)
+            f"{lmin} and {lmax}",
+            fontsize=16,
+        )
         ax.set_xlabel("Fecha", fontsize=16)
         ax.set_ylabel("N")
-        ax.legend(loc='upper left', frameon=False,
-                  borderaxespad=4,
-                  ncol=2, handlelength=3)
+        ax.legend(
+            loc="upper left",
+            frameon=False,
+            borderaxespad=4,
+            ncol=2,
+            handlelength=3,
+        )
         if log:
-            ax.set(yscale='log')
+            ax.set(yscale="log")
 
         return ax
 
-    def time_serie_all(
-        self, ax=None, argentina=True,
-        exclude=None, **kwargs
-    ):
+    def time_serie_all(self, ax=None, argentina=True, exclude=None, **kwargs):
         kwargs.setdefault("confirmed", True)
         kwargs.setdefault("active", False)
         kwargs.setdefault("recovered", False)
@@ -464,16 +504,22 @@ class CasesPlot(core.Plotter):
 
         ax.set_title(
             "COVID-19 cases by date in Argentina by Province\n"
-            f"{labels[0]} - {labels[-1]}")
+            f"{labels[0]} - {labels[-1]}"
+        )
         ax.set_xlabel("Date")
         ax.set_ylabel("N")
 
         return ax
 
     def time_serie(
-        self, provincia=None, confirmed=True,
-        active=True, recovered=True, deceased=True,
-        ax=None, **kwargs
+        self,
+        provincia=None,
+        confirmed=True,
+        active=True,
+        recovered=True,
+        deceased=True,
+        ax=None,
+        **kwargs,
     ):
         if provincia is None:
             prov_name, prov_c = "Argentina", "ARG"
@@ -484,9 +530,14 @@ class CasesPlot(core.Plotter):
 
         ts = self.frame.restore_time_serie()
         pdf = self._plot_df(
-            odf=ts, prov_name=prov_name, prov_code=prov_c,
-            confirmed=confirmed, active=active,
-            recovered=recovered, deceased=deceased)
+            odf=ts,
+            prov_name=prov_name,
+            prov_code=prov_c,
+            confirmed=confirmed,
+            active=active,
+            recovered=recovered,
+            deceased=deceased,
+        )
         pdf.plot.line(ax=ax, **kwargs)
 
         labels = [d.strftime(LABEL_DATE_FORMAT) for d in self.frame.dates]
@@ -497,7 +548,8 @@ class CasesPlot(core.Plotter):
 
         ax.set_title(
             f"COVID-19 cases by date in {prov_name}\n"
-            f"{labels[0]} - {labels[-1]}")
+            f"{labels[0]} - {labels[-1]}"
+        )
         ax.set_xlabel("Date")
         ax.set_ylabel("N")
 
@@ -506,9 +558,14 @@ class CasesPlot(core.Plotter):
         return ax
 
     def barplot(
-        self, provincia=None, confirmed=True,
-        active=True, recovered=True, deceased=True,
-        ax=None, **kwargs
+        self,
+        provincia=None,
+        confirmed=True,
+        active=True,
+        recovered=True,
+        deceased=True,
+        ax=None,
+        **kwargs,
     ):
         ax = plt.gca() if ax is None else ax
 
@@ -519,25 +576,37 @@ class CasesPlot(core.Plotter):
 
         ts = self.frame.restore_time_serie()
         pdf = self._plot_df(
-            odf=ts, prov_name=prov_name, prov_code=prov_c,
-            confirmed=confirmed, active=active,
-            recovered=recovered, deceased=deceased)
+            odf=ts,
+            prov_name=prov_name,
+            prov_code=prov_c,
+            confirmed=confirmed,
+            active=active,
+            recovered=recovered,
+            deceased=deceased,
+        )
 
         pdf.plot.bar(ax=ax, **kwargs)
 
         ax.set_xlabel("Date")
         ax.set_ylabel("N")
 
-        labels = [d.date() for d in self.frame.dates]
+        labels = [
+            d.date().strftime(LABEL_DATE_FORMAT) for d in self.frame.dates
+        ]
         ax.set_xticklabels(labels, rotation=45)
         ax.legend()
 
         return ax
 
     def boxplot(
-        self, provincia=None, confirmed=True,
-        active=True, recovered=True, deceased=True,
-        ax=None, **kwargs
+        self,
+        provincia=None,
+        confirmed=True,
+        active=True,
+        recovered=True,
+        deceased=True,
+        ax=None,
+        **kwargs,
     ):
         ax = plt.gca() if ax is None else ax
 
@@ -548,9 +617,14 @@ class CasesPlot(core.Plotter):
 
         ts = self.frame.restore_time_serie()
         pdf = self._plot_df(
-            odf=ts, prov_name=prov_name, prov_code=prov_c,
-            confirmed=confirmed, active=active,
-            recovered=recovered, deceased=deceased)
+            odf=ts,
+            prov_name=prov_name,
+            prov_code=prov_c,
+            confirmed=confirmed,
+            active=active,
+            recovered=recovered,
+            deceased=deceased,
+        )
         pdf.plot.box(ax=ax, **kwargs)
 
         ax.set_ylabel("N")
@@ -577,25 +651,31 @@ class CasesFrame(core.Frame):
 
         """
         return [
-            adate for adate in self.df.columns
-            if isinstance(adate, dt.datetime)]
+            adate
+            for adate in self.df.columns
+            if isinstance(adate, dt.datetime)
+        ]
 
     @property
     def tot_cases(self):
         """Returns latest value of total confirmed cases"""
-        return self.df.loc[('ARG', 'C'), self.dates[-1]]
+        return self.df.loc[("ARG", "C"), self.dates[-1]]
 
     def get_provincia_name_code(self, provincia):
         """Resolve and validate the name and code of a given provincia
         name or code.
 
         """
+
         def norm(text):
             text = text.lower()
-            text = unicodedata.normalize('NFD', text)\
-                .encode('ascii', 'ignore')\
+            text = (
+                unicodedata.normalize("NFD", text)
+                .encode("ascii", "ignore")
                 .decode("utf-8")
+            )
             return str(text)
+
         prov_norm = norm(provincia)
         for name, code in PROVINCIAS.items():
             if norm(name) == prov_norm or norm(code) == prov_norm:
@@ -611,13 +691,14 @@ class CasesFrame(core.Frame):
         """Retrieve a new pandas.DataFrame but with observations
         by Date.
         """
+
         def _cumdiff(row):
             shifted = np.roll(row, 1)
             shifted[0] = 0
             diff = row - shifted
             return diff
 
-        idxs = ~self.df.index.isin([('ARG', 'growth_rate_C')])
+        idxs = ~self.df.index.isin([("ARG", "growth_rate_C")])
         cols = self.dates
 
         uncum = self.df.copy()
@@ -637,12 +718,12 @@ class CasesFrame(core.Frame):
         """
         # R0 de Arg sí es None
         if provincia is None:
-            idx_region = ('ARG', 'growth_rate_C')
-            return(self.df.loc[idx_region, self.dates[1:]])
+            idx_region = ("ARG", "growth_rate_C")
+            return self.df.loc[idx_region, self.dates[1:]]
 
         pcia_code = self.get_provincia_name_code(provincia)[1]
 
-        idx_region = (pcia_code, 'C')
+        idx_region = (pcia_code, "C")
 
         I_n = self.df.loc[idx_region, self.dates[1:]].values.astype(float)
         I_n_1 = self.df.loc[idx_region, self.dates[:-1]].values.astype(float)
@@ -683,27 +764,35 @@ def load_cases(cases_url=CASES_URL, areas_pop_url=AREAS_POP_URL, force=False):
 
     """
     df_infar = cache.from_cache(
-        tag="cases.load_cases", force=force,
-        function=pd.read_excel, io=cases_url, sheet_name=0, nrows=96)
+        tag="cases.load_cases",
+        force=force,
+        function=pd.read_excel,
+        io=cases_url,
+        sheet_name=0,
+        nrows=96,
+    )
 
     areapop = cache.from_cache(
-        tag="cases.load_caces[areapop]", force=force,
-        function=pd.read_csv, filepath_or_buffer=areas_pop_url)
+        tag="cases.load_caces[areapop]",
+        force=force,
+        function=pd.read_csv,
+        filepath_or_buffer=areas_pop_url,
+    )
 
     # load table and replace Nan by zeros
     df_infar = df_infar.fillna(0)
 
     # Parsear provincias en codigos standard
-    df_infar.rename(columns={'Provicia \\ día': 'Pcia_status'}, inplace=True)
+    df_infar.rename(columns={"Provicia \\ día": "Pcia_status"}, inplace=True)
     for irow, arow in df_infar.iterrows():
-        pst = arow['Pcia_status'].split()
+        pst = arow["Pcia_status"].split()
         stat = STATUS.get(pst[-1])
 
         pcia = pst[:-2]
         if len(pcia) > 1:
-            provincia = ''
+            provincia = ""
             for ap in pcia:
-                provincia += ap + ' '
+                provincia += ap + " "
             provincia = provincia.strip()
 
         else:
@@ -711,31 +800,32 @@ def load_cases(cases_url=CASES_URL, areas_pop_url=AREAS_POP_URL, force=False):
 
         provincia_code = PROVINCIAS.get(provincia)
 
-        df_infar.loc[irow, 'cod_provincia'] = provincia_code
-        df_infar.loc[irow, 'cod_status'] = stat
-        df_infar.loc[irow, 'provincia_status'] = f"{provincia_code}_{stat}"
+        df_infar.loc[irow, "cod_provincia"] = provincia_code
+        df_infar.loc[irow, "cod_status"] = stat
+        df_infar.loc[irow, "provincia_status"] = f"{provincia_code}_{stat}"
 
     # reindex table with multi-index
-    index = pd.MultiIndex.from_frame(df_infar[['cod_provincia', 'cod_status']])
+    index = pd.MultiIndex.from_frame(df_infar[["cod_provincia", "cod_status"]])
     df_infar.index = index
 
     # drop duplicate columns
-    df_infar.drop(columns=['cod_status', 'cod_provincia'], inplace=True)
+    df_infar.drop(columns=["cod_status", "cod_provincia"], inplace=True)
     cols = list(df_infar.columns)
     df_infar = df_infar[[cols[-1]] + cols[:-1]]
 
     # calculate the total number per categorie per state, and the global
     for astatus in np.unique(df_infar.index.get_level_values(1)):
         filter_confirmados = df_infar.index.get_level_values(
-            'cod_status').isin([astatus])
+            "cod_status"
+        ).isin([astatus])
         sums = df_infar[filter_confirmados].sum(axis=0)
         dates = [date for date in sums.index if isinstance(date, dt.datetime)]
-        df_infar.loc[('ARG', astatus), dates] = sums[dates].astype(int)
+        df_infar.loc[("ARG", astatus), dates] = sums[dates].astype(int)
 
-        df_infar.loc[('ARG', astatus), 'provincia_status'] = f"ARG_{astatus}"
+        df_infar.loc[("ARG", astatus), "provincia_status"] = f"ARG_{astatus}"
 
-    n_c = df_infar.loc[('ARG', 'C'), dates].values
+    n_c = df_infar.loc[("ARG", "C"), dates].values
     growth_rate_C = (n_c[1:] / n_c[:-1]) - 1
-    df_infar.loc[('ARG', 'growth_rate_C'), dates[1:]] = growth_rate_C
+    df_infar.loc[("ARG", "growth_rate_C"), dates[1:]] = growth_rate_C
 
     return CasesFrame(df=df_infar, extra={"areapop": areapop})

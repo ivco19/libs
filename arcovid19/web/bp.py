@@ -42,20 +42,33 @@ from flask_babel import lazy_gettext as _
 
 import pandas as pd
 
-from .. import (
-    __doc__ as ARCOVID19_RESUME,
-    __version__ as ARCOVID19_VERSION)
+from .. import __doc__ as ARCOVID19_RESUME, __version__ as ARCOVID19_VERSION
 
 from ..models import load_infection_curve, InfectionCurve
+from ..cases import load_cases, CASES_URL
 from . import forms
+
+
+# =============================================================================
+# FUNCTIONS
+# =============================================================================
+
+
+def subplots():
+    return plt.subplots(frameon=False, figsize=(12, 8))
+
+
+def plot_to_html(fig):
+    html = mpld3.fig_to_html(fig)
+    return jinja2.Markup(html)
 
 
 # =============================================================================
 # BASE CLASS
 # =============================================================================
 
-class TemplateView(View):
 
+class TemplateView(View):
     def get_template_name(self):
         return self.template_name
 
@@ -74,38 +87,22 @@ class TemplateView(View):
 # VIEWS
 # =============================================================================
 
+
 class InfectionCurveView(TemplateView):
 
-    methods = ['GET', 'POST']
+    methods = ["GET", "POST"]
     template_name = "InfectionCurve.html"
 
-    def subplots(self):
-        return plt.subplots(frameon=False, figsize=(12, 8))
-
-    def _get_img(self, fig):
-        buf = io.StringIO()
-
-        fig.tight_layout()
-        fig.savefig(buf, format='svg')
-        svg = buf.getvalue()
-        buf.close()
-
-        return jinja2.Markup(svg)
-
-    def get_img(self, fig):
-        html = mpld3.fig_to_html(fig)
-        return jinja2.Markup(html)
-
     def make_plots(self, result):
-        fig_linear, ax_linear = self.subplots()
+        fig_linear, ax_linear = subplots()
         result.plot(ax=ax_linear)
 
-        fig_log, ax_log = self.subplots()
+        fig_log, ax_log = subplots()
         result.plot(ax=ax_log, log=True)
 
         return {
-            _("Linear"): self.get_img(fig_linear),
-            _("Log"): self.get_img(fig_log)
+            _("Linear"): plot_to_html(fig_linear),
+            _("Log"): plot_to_html(fig_log),
         }
 
     def get_context_data(self):
@@ -148,11 +145,12 @@ class InfectionCurveView(TemplateView):
         return context_data
 
 
-class DownloadView(InfectionCurveView):
+class DownloadModelView(InfectionCurveView):
 
-    methods = ['POST']
+    methods = ["POST"]
     content_type = (
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
     def dispatch_request(self):
         context_data = self.get_context_data()
@@ -182,11 +180,91 @@ class DownloadView(InfectionCurveView):
         writer.save()
 
         response = flask.make_response(fileobj.getvalue())
-        response.headers.set('Content-Type', self.content_type)
+        response.headers.set("Content-Type", self.content_type)
         response.headers.set(
-            'Content-Disposition', 'attachment', filename=fname)
+            "Content-Disposition", "attachment", filename=fname
+        )
 
         return response
+
+
+# =============================================================================
+# CASES
+# =============================================================================
+
+
+class CasesView(TemplateView):
+
+    methods = ["GET", "POST"]
+    template_name = "Cases.html"
+
+    def make_plots(self, *, cases, all_country, province, all_status, status):
+        all_country = all_country or not province
+
+        status_params = {
+            "confirmed",
+            "active",
+            "recovered",
+            "deceased",
+        }
+        if all_status or not status:
+            status_params = {k: True for k in status_params}
+        else:
+            status_params = {
+                k: (k.upper()[0] in status) for k in status_params
+            }
+
+        fig_box, ax_box = subplots()
+        cases.plot.boxplot(ax=ax_box, **status_params)
+
+        fig_bar, ax_bar = subplots()
+        cases.plot.barplot(ax=ax_bar, **status_params)
+
+        fig_epi, ax_epi = subplots()
+        if all_country:
+            cases.plot.curva_epi_provincia(ax=ax_epi, **status_params)
+        for prov in province:
+            cases.plot.curva_epi_provincia(
+                provincia=prov, ax=ax_epi, **status_params
+            )
+
+        fig_ts, ax_ts = subplots()
+        if all_country:
+            cases.plot.time_serie(ax=ax_ts, **status_params)
+        for prov in province:
+            cases.plot.time_serie(provincia=prov, ax=ax_ts, **status_params)
+
+        return {
+            _("Growth"): plot_to_html(fig_epi),
+            _("Time-Serie"): plot_to_html(fig_ts),
+            _("Box"): plot_to_html(fig_box),
+            _("Bars"): plot_to_html(fig_bar),
+        }
+
+    def get_context_data(self):
+        context_data = {}
+
+        form = forms.CasesForm()
+
+        if flask.request.method == "POST" and form.validate_on_submit():
+            # get all the data as string
+            data = form.data.copy()
+
+            # remove crftokern
+            data.pop("csrf_token", None)
+
+            cases = load_cases()
+
+            context_data["result"] = cases
+            context_data["plots"] = self.make_plots(cases=cases, **data)
+
+            now = dt.datetime.now().isoformat()
+            context_data["cases_download"] = CASES_URL
+            context_data["cases_download_name"] = f"arcovid19_cases_{now}.xlsx"
+
+        context_data["form"] = form
+
+        return context_data
 
 
 # =============================================================================
@@ -201,12 +279,14 @@ wavid19 = flask.Blueprint("arcovid19", "arcovid19.web.bp")
 def inject_arcovid19():
     return {
         "ARCOVID19_RESUME": ARCOVID19_RESUME,
-        "ARCOVID19_VERSION": ARCOVID19_VERSION}
+        "ARCOVID19_VERSION": ARCOVID19_VERSION,
+    }
 
 
+wavid19.add_url_rule("/", view_func=InfectionCurveView.as_view("index"))
+wavid19.add_url_rule("/icurve", view_func=InfectionCurveView.as_view("icurve"))
 wavid19.add_url_rule(
-    '/', view_func=InfectionCurveView.as_view("index"))
-wavid19.add_url_rule(
-    '/icurve', view_func=InfectionCurveView.as_view("icurve"))
-wavid19.add_url_rule(
-    '/download_model', view_func=DownloadView.as_view("download_model"))
+    "/download_model", view_func=DownloadModelView.as_view("download_model")
+)
+
+wavid19.add_url_rule("/cases", view_func=CasesView.as_view("cases"))

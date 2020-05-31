@@ -40,11 +40,13 @@ import attr
 from numpydoc import docscrape
 
 from ..models import InfectionCurve
+from .. import cases
 
 
 # =============================================================================
 # CUSTOM FIELD
 # =============================================================================
+
 
 class FloatField(wtf.FloatField):
     widget = wtf.widgets.html5.NumberInput()
@@ -71,6 +73,7 @@ DEFAULT_RENDER_KW = {"class": "form-control form-control-sm"}
 # INFECTION FORM
 # =============================================================================
 
+
 def make_InfectionCurveForm():
 
     # here gone all the fields
@@ -86,11 +89,12 @@ def make_InfectionCurveForm():
 
     # add the model select to the form
     form_fields["model"] = wtf.SelectField(
-        _('Model'),
+        _("Model"),
         choices=models,
         description=_("Compartimental model"),
         render_kw={"class": "custom-select custom-select-sm"},
-        default=models[0][0])
+        default=models[0][0],
+    )
 
     # now we add the same parameters for all the methods
     for method in methods:
@@ -99,7 +103,8 @@ def make_InfectionCurveForm():
         mtd_docs = docscrape.FunctionDoc(method)
         docs = {
             p.name.split(":")[0]: " ".join(p.desc).strip()
-            for p in mtd_docs.get("Parameters")}
+            for p in mtd_docs.get("Parameters")
+        }
 
         # extract all the parameters
         params = inspect.signature(method).parameters
@@ -132,14 +137,16 @@ def make_InfectionCurveForm():
                 description=_(description),
                 default=default,
                 validators=validators,
-                render_kw=render_kw)
+                render_kw=render_kw,
+            )
             form_fields[param.name] = ffield
 
     # extract all the fields doc from the class documentation
     class_docs = docscrape.ClassDoc(InfectionCurve)
     docs = {
         p.name.split(":")[0]: " ".join(p.desc).strip()
-        for p in class_docs.get("Parameters")}
+        for p in class_docs.get("Parameters")
+    }
 
     # create one field for attribute
     for aname, afield in attr.fields_dict(InfectionCurve).items():
@@ -165,7 +172,8 @@ def make_InfectionCurveForm():
             description=_(description),
             default=afield.default,
             validators=validators,
-            render_kw=render_kw)
+            render_kw=render_kw,
+        )
         form_fields[aname] = ffield
 
     # create the form itself
@@ -176,3 +184,55 @@ def make_InfectionCurveForm():
 InfectionCurveForm = make_InfectionCurveForm()
 
 del make_InfectionCurveForm
+
+
+# =============================================================================
+# CASES FORMS
+# =============================================================================
+
+
+def make_CasesForm():
+
+    form_fields = {}
+
+    form_fields["all_country"] = wtf.BooleanField(
+        _("Argentina"),
+        default="checked",
+        render_kw={"class": "form-check-input"},
+        description=_("Data for the entire country"),
+    )
+
+    form_fields["province"] = wtf.SelectMultipleField(
+        _("Province"),
+        choices=cases.CODE_TO_POVINCIA.items(),
+        description=_("Province to plot"),
+        render_kw={"class": "custom-select"},
+    )
+
+    form_fields["all_status"] = wtf.BooleanField(
+        _("All Status"),
+        default="checked",
+        render_kw={"class": "form-check-input"},
+        description=_("Show all the status"),
+    )
+
+    status_choices = {}
+    for k, v in cases.STATUS.items():
+        if v not in status_choices:
+            status_choices[v] = _(k)
+
+    form_fields["status"] = wtf.SelectMultipleField(
+        _("Status"),
+        choices=status_choices.items(),
+        description=_("Status of the patients"),
+        render_kw={"class": "custom-select"},
+    )
+
+    # create the form itself
+    form = type("CasesForm", (fwtf.FlaskForm,), form_fields)
+    return form
+
+
+CasesForm = make_CasesForm()
+
+del make_CasesForm
