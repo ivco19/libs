@@ -19,7 +19,7 @@ COVID-19 data from the Arcovid19 group.
 
 """
 
-__version__ = "0.5.1"
+__version__ = "0.6b"
 
 
 # =============================================================================
@@ -29,4 +29,4 @@ __version__ = "0.5.1"
 from .cache import CACHE, from_cache  # noqa
 from .cases import load_cases  # noqa
 from .models import load_infection_curve  # noqa
-from . import web # noqa
+from . import web  # noqa
