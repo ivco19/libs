@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-# Copyright (c) 2020, Bruno Sanchez, Vanessa Daza,
+# [AtOmXpLuS](https://atomxplus.com)
+# Copyright (c) 2020, Koray Durgut Bruno Sanchez, Vanessa Daza,
 #                     Juan B Cabral, Marcelo Lares,
 #                     Nadia Luczywo, Dante Paz, Rodrigo Quiroga,
 #                     Martín de los Ríos, Federico Stasyszyn
