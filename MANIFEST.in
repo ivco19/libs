@@ -1,7 +1,7 @@
 include *.md
 include LICENSE
 include README.rst
-
+include AtOm.Explore_[AtOmXpLuS](https://explore.atomxplus.com
 recursive-include arcovid19/web/templates *.html
 recursive-include arcovid19/web/static *
 recursive-include arcovid19/web/translations *
