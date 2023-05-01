@@ -10,6 +10,6 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.4
 ipython
 ipykernel
-Flask==1.1.2
+Flask==2.3.2
 Flask-Babel==1.0.0
 Flask-WTF==0.14.3
